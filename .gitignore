@@ -1,0 +1,10 @@
+attic
+build/*
+!build/.keep
+build.log
+custom-images/*
+!custom-images/.keep
+sources/*
+!sources/.keep
+work
+.DS_Store

@@ -1,0 +1,13 @@
+diff -ru emacs-29.4-custom-splash/lisp/startup.el emacs-29.4/lisp/startup.el
+--- emacs-29.4-custom-splash/lisp/startup.el	2024-06-21 22:08:53
++++ emacs-29.4/lisp/startup.el	2024-11-18 19:38:49
+@@ -1915,9 +1915,6 @@
+ 		(if (image-type-available-p 'xpm)
+ 		    "splash.xpm"
+ 		  "splash.pbm"))
+-	       ((or (image-type-available-p 'svg)
+-		    (image-type-available-p 'imagemagick))
+-		"splash.svg")
+ 	       ((image-type-available-p 'png)
+ 		"splash.png")
+ 	       ((image-type-available-p 'xpm)

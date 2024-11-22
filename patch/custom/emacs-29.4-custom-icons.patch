@@ -1,0 +1,20 @@
+diff -ru emacs-29.4-custom-icons/lisp/tool-bar.el emacs-29.4/lisp/tool-bar.el
+--- emacs-29.4-custom-icons/lisp/tool-bar.el	2024-06-21 22:08:57
++++ emacs-29.4/lisp/tool-bar.el	2024-11-18 19:43:34
+@@ -162,6 +162,7 @@
+ 	 (bg (face-attribute 'tool-bar :background))
+ 	 (colors (nconc (if (eq fg 'unspecified) nil (list :foreground fg))
+ 			(if (eq bg 'unspecified) nil (list :background bg))))
++         (tiff-spec (list :type 'tiff :file (concat icon ".tiff")))
+ 	 (xpm-spec (list :type 'xpm :file (concat icon ".xpm")))
+ 	 (xpm-lo-spec (list :type 'xpm :file
+ 			    (concat "low-color/" icon ".xpm")))
+@@ -173,6 +174,8 @@
+ 			',(list pbm-spec xbm-spec xpm-lo-spec xpm-spec))
+ 		       ((< (display-color-cells) 256)
+ 			',(list xpm-lo-spec xpm-spec pbm-spec xbm-spec))
++                       ((image-type-available-p 'tiff)
++                        ',(list tiff-spec xpm-spec pbm-spec xbm-spec))
+ 		       (t
+ 			',(list xpm-spec pbm-spec xbm-spec)))
+                  t)))
