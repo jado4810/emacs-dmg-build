@@ -31,10 +31,10 @@ USEINLINE=yes
 USEHRICON=yes
 
 # Set 'yes' to customize application icons
-USEAPPICON=yes
+USEAPPICON=no
 
 # Set 'yes' to customize splash images
-USESPLASH=yes
+USESPLASH=no
 
 # Target architectures
 ARCHES=(arm64 x86_64)
