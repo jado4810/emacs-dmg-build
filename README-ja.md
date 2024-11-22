@@ -169,7 +169,7 @@ $ brew install automake
 Apple M3の環境で10分程度かかります。
 
 ```console
-$ ./emacs-dmg-build.sh
+$ sh emacs-dmg-build.sh
 ```
 
 `build`以下にはソースパッケージが展開されているが、不要であれば削除しても構いません。

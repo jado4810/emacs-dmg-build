@@ -168,7 +168,7 @@ Execute the build script to create the dmg package under `build`.
 It takes about 10 minutes in the environment of Apple M3.
 
 ```console
-$ ./emacs-dmg-build.sh
+$ sh emacs-dmg-build.sh
 ```
 
 The source packages are expanded under `build`.
