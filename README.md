@@ -177,9 +177,9 @@ You can delete them if not necessary.
 LICENSE
 -------
 
-The script and the patches under [patch/custom](./patch/custom) are provided under [CC0](./LICENSE.txt).
+The script and the patches under [patches/custom](./patches/custom) are provided under [CC0](./LICENSE.txt).
 
-Refer to the distributors below about the external patches under [patch/plus](./patch/plus/) and [patch/inline](./patch/inline).
+Refer to the distributors below about the external patches under [patches/plus](./patches/plus/) and [patches/inline](./patches/inline).
 
 ### Distributors of included patches
 

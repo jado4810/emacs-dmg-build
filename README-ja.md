@@ -177,9 +177,9 @@ $ sh emacs-dmg-build.sh
 ライセンス
 ----------
 
-本スクリプトと[patch/custom](./patch/custom)以下のパッチについては[CC0](./LICENSE.txt)で配布します。
+本スクリプトと[patches/custom](./patches/custom)以下のパッチについては[CC0](./LICENSE.txt)で配布します。
 
-[patch/plus](./patch/plus)および[patch/inline](./patch/inline)以下に収録している外部パッチのライセンスは、以下の配布元を参照ください。
+[patches/plus](./patches/plus)および[patches/inline](./patches/inline)以下に収録している外部パッチのライセンスは、以下の配布元を参照ください。
 
 ### 同梱しているパッチの配布元
 

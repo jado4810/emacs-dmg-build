@@ -47,7 +47,7 @@ CORES=4
 SCRIPTDIR=$(cd $(dirname $0); echo $PWD)
 SRCDIR=$SCRIPTDIR/sources
 BUILDDIR=$SCRIPTDIR/build
-PATCHDIR=$SCRIPTDIR/patch
+PATCHDIR=$SCRIPTDIR/patches
 IMAGEDIR=$SCRIPTDIR/custom-images
 
 # Sources
@@ -111,7 +111,7 @@ comp_versions () {
   return 1
 }
 
-find_patch () {
+find_patches () {
   topdir=$PATCHDIR/$1
   patchtype=${2:+-$2}
 
@@ -143,10 +143,10 @@ find_patch () {
   done
 }
 
-PATCHES=(`find_patch plus`)
-[ "$USEINLINE" = "yes" ] && PATCHES+=(`find_patch inline`)
-[ "$USEHRICON" = "yes" ] && PATCHES+=(`find_patch custom icons`)
-[ "$USESPLASH" = "yes" ] && PATCHES+=(`find_patch custom splash`)
+PATCHES=(`find_patches plus`)
+[ "$USEINLINE" = "yes" ] && PATCHES+=(`find_patches inline`)
+[ "$USEHRICON" = "yes" ] && PATCHES+=(`find_patches custom icons`)
+[ "$USESPLASH" = "yes" ] && PATCHES+=(`find_patches custom splash`)
 
 # Common operations
 
