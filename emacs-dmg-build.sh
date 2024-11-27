@@ -62,18 +62,6 @@ HRICON=$BUILDDIR/emacs-hires-icons-$HRICONVER
 NETTLE=$BUILDDIR/nettle-$NETTLEVER
 GNUTLS=$BUILDDIR/gnutls-$GNUTLSVER
 
-# Patches
-
-PATCH11=$PATCHDIR/plus/fix-window-role.patch
-PATCH12=$PATCHDIR/plus/round-undecorated-frame.patch
-PATCH13=$PATCHDIR/plus/system-appearance.patch
-#PATCH14=$PATCHDIR/plus/no-frame-refocus-cocoa.patch
-
-PATCH21=$PATCHDIR/inline/emacs-29.1-inline.patch
-
-PATCH91=$PATCHDIR/custom/emacs-29.4-custom-icons.patch
-PATCH92=$PATCHDIR/custom/emacs-29.4-custom-splash.patch
-
 # Directories
 
 PKGROOT=$EMACS/pkgroot
@@ -99,6 +87,66 @@ EMACS_CFLAGS="-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
 BUILD_CFLAGS=-I$PKGROOT$BUILD_INCLUDEDIR
 BUILD_LDFLAGS=-L$PKGROOT$LIBDIR
+
+# Patches
+
+get_versions () {
+  ver=(${1%%.*})
+  rest=${1#*.}
+  ver+=(${rest%%.*})
+  if [ "${ver[1]}" = "$rest" ]; then
+    ver+=(0)
+  else
+    ver+=(${rest#*.})
+  fi
+  echo "${ver[@]}"
+}
+
+comp_versions () {
+  [ $1 -lt $4 ] && return 0
+  [ $1 -gt $4 ] && return 1
+  [ $2 -lt $5 ] && return 0
+  [ $2 -gt $5 ] && return 1
+  [ $3 -lt $6 ] && return 0
+  return 1
+}
+
+find_patch () {
+  topdir=$PATCHDIR/$1
+  patchtype=${2:+-$2}
+
+  target=(`get_versions $EMACSVER`)
+
+  patchdir=
+  latest=()
+  for dir in $topdir/*; do
+    [ -d $dir ] || continue
+
+    curr=(`get_versions ${dir##*/}`)
+    comp_versions "${target[@]}" "${curr[@]}" && continue
+
+    if [ -n "$patchdir" ]; then
+      comp_versions "${curr[@]}" "${latest[@]}" && continue
+    fi
+
+    patchdir=$dir
+    latest=("${curr[@]}")
+  done
+
+  if [ -z "$patchdir" ]; then
+    echo >&2 "No patches matching emacs-$EMACSVER found."
+    exit 1
+  fi
+
+  for file in `cat $patchdir/.index$patchtype`; do
+    [ "${file:0:1}" = "#" ] || echo $topdir/$file
+  done
+}
+
+PATCHES=(`find_patch plus`)
+[ "$USEINLINE" = "yes" ] && PATCHES+=(`find_patch inline`)
+[ "$USEHRICON" = "yes" ] && PATCHES+=(`find_patch custom icons`)
+[ "$USESPLASH" = "yes" ] && PATCHES+=(`find_patch custom splash`)
 
 # Common operations
 
@@ -353,24 +401,12 @@ date +"%Y/%m/%d %T - Emacs" >> $LOGFILE
 echo "cd $EMACS"
 cd $EMACS
 
-echo "cat $PATCH11 | patch -p1"
-cat $PATCH11 | patch -p1
-echo "cat $PATCH12 | patch -p1"
-cat $PATCH12 | patch -p1
-echo "cat $PATCH13 | patch -p1"
-cat $PATCH13 | patch -p1
-#echo "cat $PATCH14 | patch -p1"
-#cat $PATCH14 | patch -p1
-
-if [ "$USEINLINE" = "yes" ]; then
-  echo "cat $PATCH21 | patch -p1"
-  cat $PATCH21 | patch -p1
-fi
+for patch in "${PATCHES[@]}"; do
+  echo "cat $patch | patch -p1"
+  cat $patch | patch -p1
+done
 
 if [ "$USEHRICON" = "yes" ]; then
-  echo "cat $PATCH91 | patch -p1"
-  cat $PATCH91 | patch -p1
-
   echo "cp -pf $HRICON/etc/images/*.tiff etc/images"
   cp -pf $HRICON/etc/images/*.tiff etc/images
 
@@ -388,9 +424,6 @@ if [ "$USEAPPICON" = "yes" ]; then
 fi
 
 if [ "$USESPLASH" = "yes" ]; then
-  echo "cat $PATCH92 | patch -p1"
-  cat $PATCH92 | patch -p1
-
   for ext in png xpm pbm; do
     if [ -f $IMAGEDIR/splash.$ext ]; then
       echo "cp -pf $IMAGEDIR/splash.$ext etc/images"
