@@ -90,16 +90,29 @@ BUILD_LDFLAGS=-L$PKGROOT$LIBDIR
 
 # Patches
 
-get_versions () {
-  ver=(${1%%.*})
+parse_versions () {
+  major=(${1%%.*})
   rest=${1#*.}
-  ver+=(${rest%%.*})
-  if [ "${ver[1]}" = "$rest" ]; then
-    ver+=(0)
-  else
-    ver+=(${rest#*.})
-  fi
-  echo "${ver[@]}"
+
+  case $1 in
+  *.*.*)
+    minor=${rest%%.*}
+    beta=${rest#*.}
+    ;;
+  *.*-rc*)
+    minor=${rest%-rc*}
+    beta=$((${rest#$minor-rc} - 100))
+    ;;
+  *.*)
+    minor=$rest
+    beta=0
+    ;;
+  *)
+    echo >&2 "Illegal version"
+    exit 1
+  esac
+
+  echo "$major $minor $beta"
 }
 
 comp_versions () {
@@ -115,14 +128,14 @@ find_patches () {
   topdir=$PATCHDIR/$1
   patchtype=${2:+-$2}
 
-  target=(`get_versions $EMACSVER`)
+  target=(`parse_versions $EMACSVER`)
 
   patchdir=
   latest=()
   for dir in $topdir/*; do
     [ -d $dir ] || continue
 
-    curr=(`get_versions ${dir##*/}`)
+    curr=(`parse_versions ${dir##*/}`)
     comp_versions "${target[@]}" "${curr[@]}" && continue
 
     if [ -n "$patchdir" ]; then
