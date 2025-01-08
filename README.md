@@ -96,8 +96,6 @@ To customize splash images as you like, set `USESPLASH` to `yes`.
 
 If enabled, `splash.png`, `splash.xpm` and `splash.pbm` are overridden, and the default SVG splash image is disabled.
 
-In the macOS environment, virtually only PNG images are likely to be used, but XPM and PBM images may be used if the system is launched in a display environment with a low number of colors.
-
 It seems that only PNG images are actually used in the macOS environment, but XPM or PBM images might be used in the environment with low color depth.
 
 #### g. Target architectures
