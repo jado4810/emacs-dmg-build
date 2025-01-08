@@ -179,7 +179,7 @@ LICENSE
 
 The script and the patches under [patches/custom](./patches/custom) are provided under [CC0](./LICENSE.txt).
 
-Refer to the distributors below about the external patches under [patches/plus](./patches/plus/) and [patches/inline](./patches/inline).
+Refer to the distributors below about the external patches under [patches/plus](./patches/plus) and [patches/inline](./patches/inline).
 
 ### Distributors of included patches
 
