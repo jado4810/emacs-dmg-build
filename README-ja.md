@@ -163,6 +163,15 @@ homebrew等でインストールしてください。
 $ brew install automake
 ```
 
+#### d. pkgconf
+
+GnuTLS-3.8.9以降で必要です。
+homebrew等でインストールしてください。
+
+``` console
+$ brew install pkgconf
+```
+
 ### 5\. ビルドスクリプトを実行
 
 ビルドスクリプトを実行すると、`build`以下にdmgパッケージを生成します。

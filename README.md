@@ -160,6 +160,15 @@ Install it via homebrew and so on.
 $ brew install automake
 ```
 
+#### d. pkgconf
+
+Requires for GnuTLS 3.8.9 or later.
+Install it via homebrew and so on.
+
+``` console
+$ brew install pkgconf
+```
+
 ### 5\. Execute the build script
 
 Execute the build script to create the dmg package under `build`.

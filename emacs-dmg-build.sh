@@ -18,7 +18,7 @@ EMACSVER=29.4
 NETTLEVER=3.10.1
 
 # GnuTLS version
-GNUTLSVER=3.8.8
+GNUTLSVER=3.8.9
 
 # emacs-hires-icons version
 HRICONVER=3.0
