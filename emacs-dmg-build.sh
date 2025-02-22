@@ -11,7 +11,7 @@ set -e -o pipefail
 
 # Emacs version
 EMACSVER=29.4
-#EMACSVER=30.0.93
+#EMACSVER=30.1-rc1
 #EMACSVER=31.0.50
 
 # nettle version
@@ -59,7 +59,14 @@ HRICONSRC=$SRCDIR/emacs-hires-icons-$HRICONVER
 NETTLESRC=$SRCDIR/nettle-$NETTLEVER
 GNUTLSSRC=$SRCDIR/gnutls-$GNUTLSVER
 
-EMACS=$BUILDDIR/emacs-$EMACSVER
+case $EMACSVER in
+*-rc*)
+  EMACS=$BUILDDIR/emacs-${EMACSVER%-rc*}
+  ;;
+*)
+  EMACS=$BUILDDIR/emacs-$EMACSVER
+  ;;
+esac
 HRICON=$BUILDDIR/emacs-hires-icons-$HRICONVER
 NETTLE=$BUILDDIR/nettle-$NETTLEVER
 GNUTLS=$BUILDDIR/gnutls-$GNUTLSVER
