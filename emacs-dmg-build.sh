@@ -10,8 +10,8 @@ set -e -o pipefail
 # CONFIGURATIONS start -----------------
 
 # Emacs version
-EMACSVER=29.4
-#EMACSVER=30.1-rc1
+#EMACSVER=29.4
+EMACSVER=30.1
 #EMACSVER=31.0.50
 
 # nettle version
