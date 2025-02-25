@@ -29,27 +29,27 @@ It will recognize both `.tar.gz` and `.tar.xz` formats automatically.
 
 #### a. Source of Gnu Emacs
 
-Available on Gnu mirror ( https://ftpmirror.gnu.org/emacs/ ).
+Available on Gnu mirror ([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/)).
 
 #### b. Source of nettle
 
 Imprementation of cryptographic algorithm, required for GnuTLS.
 
-Available on Gnu mirror ( https://ftpmirror.gnu.org/nettle/ ).
+Available on Gnu mirror ([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/)).
 
 #### c. Source of GnuTLS
 
 Imprementation of SSL/TLS.
 Emacs requires GnuTLS, not OpenSSL coming with macOS.
 
-Available on official site ( https://www.gnutls.org/download.html ).
+Available on official site ([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html)).
 
 #### d. High resolution icons for Emacs MacPort
 
 Requires only if set `USEHRICON=yes`.
 In that case, it will replace application icons and toolbar icons to what it provides.
 
-Available on FTP server of Chiba univ. ( ftp://ftp.math.s.chiba-u.ac.jp/emacs/ ) where the MacPort patch is provided.
+Available on FTP server of Chiba university ([ftp://ftp.math.s.chiba-u.ac.jp/emacs/](ftp://ftp.math.s.chiba-u.ac.jp/emacs/)) where the MacPort patch is provided.
 
 > [!NOTE]
 >
@@ -58,7 +58,7 @@ Available on FTP server of Chiba univ. ( ftp://ftp.math.s.chiba-u.ac.jp/emacs/ )
 
 ### 2\. Setup build environment
 
-Edit the build script ( `emacs-dmg-build.sh` ) to modify the following variables near the top.
+Edit the build script (`emacs-dmg-build.sh`) to modify the following variables near the top.
 
 #### a. Versions of each sources
 

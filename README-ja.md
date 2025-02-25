@@ -30,27 +30,27 @@ SSL/TLS接続用に、GnuTLSのランタイムを同梱しており、外部ラ�
 
 #### a. Gnu Emacs本体のソース
 
-Gnuミラー ( https://ftpmirror.gnu.org/emacs/ ) からダウンロードできます。
+Gnuミラー([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/))からダウンロードできます。
 
 #### b. nettleのソース
 
 GnuTLSに必須となる、暗号アルゴリズムの実装です。
 
-Gnuミラー ( https://ftpmirror.gnu.org/nettle/ ) からダウンロードできます。
+Gnuミラー([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/))からダウンロードできます。
 
 #### c. GnuTLSのソース
 
 SSL/TLSの実装です。
 EmacsはmacOS標準のOpenSSLではなく、GnuTLSが必要です。
 
-公式サイト ( https://www.gnutls.org/download.html ) からダウンロードできます。
+公式サイト([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html))からダウンロードできます。
 
 #### d. Emacs MacPortが採用している高解像アイコン
 
 `USEHRICON=yes`を設定した場合のみ必要です。
 この場合、アプリケーションアイコンとツールバーアイコンをこれに置き換えます。
 
-MacPortパッチを配布している千葉大のFTPサーバー ( ftp://ftp.math.s.chiba-u.ac.jp/emacs/ ) からダウンロードできます。
+MacPortパッチを配布している千葉大のFTPサーバー([ftp://ftp.math.s.chiba-u.ac.jp/emacs/](ftp://ftp.math.s.chiba-u.ac.jp/emacs/))からダウンロードできます。
 
 > [!NOTE]
 >
@@ -59,7 +59,7 @@ MacPortパッチを配布している千葉大のFTPサーバー ( ftp://ftp.mat
 
 ### 2\. ビルド環境の設定
 
-ビルドスクリプト ( `emacs-dmg-build.sh` ) を編集し、先頭付近の以下の設定値を修正してください。
+ビルドスクリプト(`emacs-dmg-build.sh`)を編集し、先頭付近の以下の設定値を修正してください。
 
 #### a. 各ソース等のバージョン
 
@@ -73,7 +73,7 @@ MacPortパッチを配布している千葉大のFTPサーバー ( ftp://ftp.mat
 
 #### c. インラインパッチを使用するか
 
-Ishikawa Takaaki氏が https://github.com/takaxp/ns-inline-patch で取りまとめているインラインパッチを適用する場合は、`USEINLINE`に`yes`を設定してください。
+Ishikawa Takaaki氏が[https://github.com/takaxp/ns-inline-patch](https://github.com/takaxp/ns-inline-patch)で取りまとめているインラインパッチを適用する場合は、`USEINLINE`に`yes`を設定してください。
 
 最近のEmacsは、そのままでもOSのインプットメソッドでインライン入力が可能となっていますが、`toggle-input-method`による入力モード変更や、入力モード変更時のフックといった有用な機能が使えますので、必要であれば適用してください。
 
