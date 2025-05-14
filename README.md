@@ -20,6 +20,8 @@ It works without any dependencies on external libraries; having GnuTLS runtimes 
 Applies some patches from [Emacs Plus](https://github.com/d12frosted/homebrew-emacs-plus).
 Also, [inline patch](https://github.com/takaxp/ns-inline-patch) would be available useful for CJK environment.
 
+And more, modern high resolution icons set delivered from [Emacs MacPort](https://bitbucket.org/mituharu/emacs-mac) is available.
+
 How to build
 ------------
 
@@ -45,13 +47,6 @@ Emacs requires GnuTLS, not OpenSSL coming with macOS.
 
 Available on official site ([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html)).
 
-#### d. High resolution icons for Emacs MacPort
-
-Requires only if set `USEHRICON=yes`.
-In that case, it will replace application icons and toolbar icons to what it provides.
-
-Available on FTP server of Chiba university ([ftp://ftp.math.s.chiba-u.ac.jp/emacs/](ftp://ftp.math.s.chiba-u.ac.jp/emacs/)) where the MacPort patch is provided.
-
 > [!NOTE]
 >
 > We checked the versions specified in the build script, but newer ones should work, especially for required libraries.
@@ -63,7 +58,7 @@ Edit the build script (`emacs-dmg-build.sh`) to modify the following variables n
 
 #### a. Versions of each sources
 
-Set `EMACSVER`, `NETTLEVER`, `GNUTLSVER` and `HRICONVER` values to match those of retrieved ones.
+Set `EMACSVER`, `NETTLEVER` and `GNUTLSVER` values to match those of retrieved ones.
 
 #### b. Path where site-lisp will be stored
 
@@ -79,17 +74,16 @@ Although, in recent versions of Emacsen, the inline (on the spot) input via OS-n
 
 #### d. Whether to apply high resolution icons
 
-To use high resolution icons by Emacs MacPort (emacs-hires-icons), set `USEHRICON` to `yes`.
+To use high resolution icons by Emacs MacPort, set `USEHRICON` to `yes`.
 
 If enabled, the images from those icons will be used for application icons and toolbar.
-  However, the splash images will not be used as the SVG images used by recent versions of Emacsen are preferred.
 
 #### e. Whether to customize application icons
 
 To customize application icons as you like, set `USEAPPICON` to `yes`.
 
 It would be useful when using icons which the EmacsPlus project coordinates to be available in their build options.
-If enabled, `Emacs.icns` and `document.icns` are preferred to those of emacs-hires-icons.
+If enabled, `Emacs.icns` and `document.icns` are preferred to those of Emacs MacPort.
 
 #### f. Whether to customize splash images
 
@@ -187,9 +181,10 @@ LICENSE
 
 The script and the patches under [patches/custom](./patches/custom) are provided under [CC0](./LICENSE.txt).
 
-Refer to the distributors below about the external patches under [patches/plus](./patches/plus) and [patches/inline](./patches/inline).
+External patches under [patches/plus](./patches/plus), [patches/inline](./patches/inline), and icon resources under [icons](./icons) are provided under other licenses: refer to the LICENSE or README files under each directories for detail.
 
-### Distributors of included patches
+### Distributors of included resources
 
-* homebrew-emacs-plus - https://github.com/d12frosted/homebrew-emacs-plus
+* Emacs Plus - https://github.com/d12frosted/homebrew-emacs-plus
 * ns-inline-patch - https://github.com/takaxp/ns-inline-patch
+* Emacs MacPort - https://bitbucket.org/mituharu/emacs-mac
