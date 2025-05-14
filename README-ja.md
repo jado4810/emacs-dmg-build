@@ -21,6 +21,8 @@ SSL/TLS接続用に、GnuTLSのランタイムを同梱しており、外部ラ�
 [Emacs Plus](https://github.com/d12frosted/homebrew-emacs-plus)のパッチをいくつか適用しています。
 また、CJK環境で有用な[インラインパッチ](https://github.com/takaxp/ns-inline-patch)も選択可能です。
 
+加えて、[Emacs MacPort](https://bitbucket.org/mituharu/emacs-mac)が採用している高解像度アイコンも利用できます。
+
 使い方
 ------
 
@@ -46,13 +48,6 @@ EmacsはmacOS標準のOpenSSLではなく、GnuTLSが必要です。
 
 公式サイト([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html))からダウンロードできます。
 
-#### d. Emacs MacPortが採用している高解像アイコン
-
-`USEHRICON=yes`を設定した場合のみ必要です。
-この場合、アプリケーションアイコンとツールバーアイコンをこれに置き換えます。
-
-MacPortパッチを配布している千葉大のFTPサーバー([ftp://ftp.math.s.chiba-u.ac.jp/emacs/](ftp://ftp.math.s.chiba-u.ac.jp/emacs/))からダウンロードできます。
-
 > [!NOTE]
 >
 > ビルドスクリプト中に指定したバージョンのものは動作確認済みですが、特に依存ライブラリーについては、それより新しいものでもおそらく動作します。
@@ -64,7 +59,7 @@ MacPortパッチを配布している千葉大のFTPサーバー([ftp://ftp.math
 
 #### a. 各ソース等のバージョン
 
-`EMACSVER`・`NETTLEVER`・`GNUTLSVER`・`HRICONVER`の値を、実際に取得したものと一致するようにしてください。
+`EMACSVER`・`NETTLEVER`・`GNUTLSVER`の値を、実際に取得したものと一致するようにしてください。
 
 #### b. site-lispの格納先パス
 
@@ -80,17 +75,16 @@ Ishikawa Takaaki氏が[https://github.com/takaxp/ns-inline-patch](https://github
 
 #### d. 高解像アイコンを使用するか
 
-Emacs MacPortが採用している高解像アイコン(emacs-hires-icons)を使用する場合は、`USEHRICON`に`yes`を設定してください。
+Emacs MacPortが採用している高解像アイコンを使用する場合は、`USEHRICON`に`yes`を設定してください。
 
 有効にすると、アプリケーションアイコンとツールバーアイコンに、当該アイコンセットの画像を使用します。
-スプラッシュ画像については、現在Emacsが採用しているSVG画像を優先するため、ここで提供されている画像は使用しません。
 
 #### e. アプリケーションアイコンを置き換えるか
 
 別途用意したアプリケーションアイコンを用いる場合は、`USEAPPICON`に`yes`を設定してください。
 
 EmacsPlusでは、オプションで指定可能なアイコン群を取りまとめていますが、このようなアイコンを使用する場合に有用です。
-有効にした場合、`Emacs.icns`・`document.icns`があればemacs-hires-iconsよりも優先してこちらを使用します。
+有効にした場合、`Emacs.icns`・`document.icns`があればEmacs MacPort由来のものよりも優先してこちらを使用します。
 
 #### f. スプラッシュ画像を置き換えるか
 
@@ -189,9 +183,11 @@ $ sh emacs-dmg-build.sh
 
 本スクリプトと[patches/custom](./patches/custom)以下のパッチについては[CC0](./LICENSE.txt)で配布します。
 
-[patches/plus](./patches/plus)および[patches/inline](./patches/inline)以下に収録している外部パッチのライセンスは、以下の配布元を参照ください。
+[patches/plus](./patches/plus)および[patches/inline](./patches/inline)以下のパッチや、[icons](./icons)以下のアイコンデータは、異なるライセンス条件で配布されているものを収録したものです。
+詳細は各ディレクトリー以下のLICENSEファイルもしくはREADMEファイルを参照ください。
 
-### 同梱しているパッチの配布元
+### 同梱しているリソースの配布元
 
-* homebrew-emacs-plus … https://github.com/d12frosted/homebrew-emacs-plus
+* Emacs Plus … https://github.com/d12frosted/homebrew-emacs-plus
 * ns-inline-patch … https://github.com/takaxp/ns-inline-patch
+* Emacs MacPort … https://bitbucket.org/mituharu/emacs-mac
