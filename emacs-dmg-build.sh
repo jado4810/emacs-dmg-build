@@ -20,16 +20,13 @@ NETTLEVER=3.10.1
 # GnuTLS version
 GNUTLSVER=3.8.9
 
-# emacs-hires-icons version
-HRICONVER=3.0
-
 # site-lisp path
 SITELISP="/Library/Application Support/Emacs/site-lisp"
 
 # Set 'yes' to apply ns-inline-patch
 USEINLINE=yes
 
-# Set 'yes' to use emacs-hires-icons
+# Set 'yes' to use modern high resolution icons from Emacs MacPort
 USEHRICON=yes
 
 # Set 'yes' to customize application icons
@@ -50,12 +47,12 @@ SCRIPTDIR=$(cd $(dirname $0); echo $PWD)
 SRCDIR=$SCRIPTDIR/sources
 BUILDDIR=$SCRIPTDIR/build
 PATCHDIR=$SCRIPTDIR/patches
+HRICONDIR=$SCRIPTDIR/icons
 IMAGEDIR=$SCRIPTDIR/custom-images
 
 # Sources
 
 EMACSSRC=$SRCDIR/emacs-$EMACSVER
-HRICONSRC=$SRCDIR/emacs-hires-icons-$HRICONVER
 NETTLESRC=$SRCDIR/nettle-$NETTLEVER
 GNUTLSSRC=$SRCDIR/gnutls-$GNUTLSVER
 
@@ -67,7 +64,6 @@ case $EMACSVER in
   EMACS=$BUILDDIR/emacs-$EMACSVER
   ;;
 esac
-HRICON=$BUILDDIR/emacs-hires-icons-$HRICONVER
 NETTLE=$BUILDDIR/nettle-$NETTLEVER
 GNUTLS=$BUILDDIR/gnutls-$GNUTLSVER
 
@@ -336,9 +332,6 @@ cd $BUILDDIR
 extract_src $EMACSSRC $EMACS
 extract_src $NETTLESRC $NETTLE arch
 extract_src $GNUTLSSRC $GNUTLS arch
-if [ "$USEHRICON" = "yes" ]; then
-  extract_src $HRICONSRC $HRICON
-fi
 
 # Build required libraries to include into the package -----------------
 
@@ -429,11 +422,11 @@ for patch in "${PATCHES[@]}"; do
 done
 
 if [ "$USEHRICON" = "yes" ]; then
-  echo "cp -pf $HRICON/etc/images/*.tiff etc/images"
-  cp -pf $HRICON/etc/images/*.tiff etc/images
+  echo "cp -pf $HRICONDIR/toolbar/* etc/images"
+  cp -pf $HRICONDIR/toolbar/* etc/images
 
-  echo "cp -pf $HRICON/mac/Emacs.app/Contents/Resources/* nextstep/Cocoa/Emacs.base/Contents/Resources"
-  cp -pf $HRICON/mac/Emacs.app/Contents/Resources/* nextstep/Cocoa/Emacs.base/Contents/Resources
+  echo "cp -pf $HRICONDIR/app/* nextstep/Cocoa/Emacs.base/Contents/Resources"
+  cp -pf $HRICONDIR/app/* nextstep/Cocoa/Emacs.base/Contents/Resources
 fi
 
 if [ "$USEAPPICON" = "yes" ]; then
@@ -489,8 +482,8 @@ tar cf - -C nextstep/Emacs.app/Contents . | tar xpf - -C $PKGROOT$CTSROOT
 
 if [ "$USEHRICON" = "yes" ]; then
   for file in README NEWS; do
-    echo "cp -p $HRICON/$file-hires-icons $PKGROOT$PREFIX/etc"
-    cp -p $HRICON/$file-hires-icons $PKGROOT$PREFIX/etc
+    echo "cp -p $HRICONDIR/$file-hires-icons $PKGROOT$PREFIX/etc"
+    cp -p $HRICONDIR/$file-hires-icons $PKGROOT$PREFIX/etc
   done
 fi
 
