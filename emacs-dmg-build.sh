@@ -480,6 +480,14 @@ tar cf - -C nextstep/Emacs.app/Contents . | tar xpf - -C $PKGROOT$CTSROOT
 
 #cp $PATCHDIR/site-start.el $PKGROOT$PREFIX/share/emacs/site-lisp
 
+echo "cp -p $PATCHDIR/plus/LICENSE $PKGROOT$PREFIX/etc/LICENSE-homebrew-emacs-plus"
+cp -p $PATCHDIR/plus/LICENSE $PKGROOT$PREFIX/etc/LICENSE-homebrew-emacs-plus
+
+if [ "$USEINLINE" = "yes" ]; then
+  echo "cp -p $PATCHDIR/inline/LICENSE $PKGROOT$PREFIX/etc/LICENSE-ns-inline-patch"
+  cp -p $PATCHDIR/inline/LICENSE $PKGROOT$PREFIX/etc/LICENSE-ns-inline-patch
+fi
+
 if [ "$USEHRICON" = "yes" ]; then
   for file in README NEWS; do
     echo "cp -p $HRICONDIR/$file-hires-icons $PKGROOT$PREFIX/etc"
