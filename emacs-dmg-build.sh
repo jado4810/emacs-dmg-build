@@ -86,12 +86,17 @@ ARCH_FLAGS=()
 for arch in ${ARCHES[@]}; do
   ARCH_FLAGS+=("-arch $arch")
 done
-ARCH_FLAGS="${ARCH_FLAGS[*]}"
 
 EMACS_CFLAGS="-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 
 BUILD_CFLAGS=-I$PKGROOT$BUILD_INCLUDEDIR
 BUILD_LDFLAGS=-L$PKGROOT$LIBDIR
+
+NOFTRS=(x xpm jpeg tiff gif png rsvg webp lcms2 tree-sitter native-compilation)
+NOFTR_FLAGS=()
+for ftr in ${NOFTRS[@]}; do
+  NOFTR_FLAGS+=("--without-$ftr")
+done
 
 # Patches
 
@@ -462,8 +467,8 @@ fi
 #echo "sed -e 's/\${libexecdir}\\/emacs\\/\${version}\\/\${configuration}/\${libexecdir}/' -i '' configure Makefile.in"
 #sed -e 's/${libexecdir}\/emacs\/${version}\/${configuration}/${libexecdir}/' -i '' configure Makefile.in
 
-echo "CFLAGS=\"$ARCH_FLAGS $EMACS_CFLAGS\" LDFLAGS=\"$ARCH_FLAGS\" LIBGNUTLS_CFLAGS=\"$BUILD_CFLAGS\" LIBGNUTLS_LIBS=\"$BUILD_LDFLAGS -lgnutls\" ./configure --with-ns --enable-locallisppath=\"$SITELISP\""
-CFLAGS="$ARCH_FLAGS $EMACS_CFLAGS" LDFLAGS="$ARCH_FLAGS" LIBGNUTLS_CFLAGS="$BUILD_CFLAGS" LIBGNUTLS_LIBS="$BUILD_LDFLAGS -lgnutls" ./configure --with-ns --enable-locallisppath="$SITELISP"
+echo "CFLAGS=\"${ARCH_FLAGS[*]} $EMACS_CFLAGS\" LDFLAGS=\"${ARCH_FLAGS[*]}\" LIBGNUTLS_CFLAGS=\"$BUILD_CFLAGS\" LIBGNUTLS_LIBS=\"$BUILD_LDFLAGS -lgnutls\" ./configure --with-ns --with-modules ${NOFTR_FLAGS[*]} --enable-locallisppath=\"$SITELISP\""
+CFLAGS="${ARCH_FLAGS[*]} $EMACS_CFLAGS" LDFLAGS="${ARCH_FLAGS[*]}" LIBGNUTLS_CFLAGS="$BUILD_CFLAGS" LIBGNUTLS_LIBS="$BUILD_LDFLAGS -lgnutls" ./configure --with-ns --with-modules ${NOFTR_FLAGS[*]} --enable-locallisppath="$SITELISP"
 
 fake_libs make -j$CORES
 
