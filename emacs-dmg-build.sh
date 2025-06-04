@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # DMG Package Builder of Gnu Emacs
 #
