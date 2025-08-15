@@ -19,7 +19,7 @@ EMACSVER=30.1
 NETTLEVER=3.10.2
 
 # GnuTLS version
-GNUTLSVER=3.8.9
+GNUTLSVER=3.8.10
 
 # site-lisp path
 SITELISP="/Library/Application Support/Emacs/site-lisp"
