@@ -16,7 +16,7 @@ EMACSVER=30.1
 #EMACSVER=31.0.50
 
 # nettle version
-NETTLEVER=3.10.1
+NETTLEVER=3.10.2
 
 # GnuTLS version
 GNUTLSVER=3.8.9
