@@ -20,6 +20,9 @@ NETTLEVER=3.10.2
 # GnuTLS version
 GNUTLSVER=3.8.10
 
+# tree-sitter version
+TREESITVER=0.26.7
+
 # site-lisp path
 SITELISP="/Library/Application Support/Emacs/site-lisp"
 
@@ -34,6 +37,22 @@ USEAPPICON=no
 
 # Set 'yes' to customize splash images
 USESPLASH=no
+
+# Target language grammars
+TSGRAMMARS=(
+#    bash;https://github.com/tree-sitter/tree-sitter-bash
+#    json;https://github.com/tree-sitter/tree-sitter-json
+#    yaml;https://github.com/tree-sitter-grammars/tree-sitter-yaml
+#    dockerfile;https://github.com/camdencheek/tree-sitter-dockerfile
+#    c;http://github.com/tree-sitter/tree-sitter-c
+#    cpp;https://github.com/tree-sitter/tree-sitter-cpp
+#    javascript;https://gitbub.com/tree-sitter/tree-sitter-javascript
+#    typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript
+#    tsx:https://github.com/tree-sitter/tree-sitter-typescript;tsx
+#    go;https://github.com/tree-sitter/tree-sitter-go
+#    python;https://github.com/tree-sitter/tree-sitter-python
+#    ruby;https://github.com/tree-sitter/tree-sitter-ruby
+)
 
 # Target architectures
 ARCHES=(arm64 x86_64)
@@ -55,6 +74,8 @@ IMAGEDIR=$SCRIPTDIR/custom-images
 EMACSSRC=$SRCDIR/emacs-$EMACSVER
 NETTLESRC=$SRCDIR/nettle-$NETTLEVER
 GNUTLSSRC=$SRCDIR/gnutls-$GNUTLSVER
+TREESITSRC=$SRCDIR/tree-sitter-$TREESITVER
+GRAMMARSRC=$SRCDIR/tree-sitter-grammars
 
 case $EMACSVER in
 *-rc*)
@@ -66,6 +87,7 @@ case $EMACSVER in
 esac
 NETTLE=$BUILDDIR/nettle-$NETTLEVER
 GNUTLS=$BUILDDIR/gnutls-$GNUTLSVER
+TREESIT=$BUILDDIR/tree-sitter-$TREESITVER
 
 # Directories
 
@@ -73,6 +95,8 @@ PKGROOT=$EMACS/pkgroot
 APPROOT=/Applications
 CTSROOT=$APPROOT/Emacs.app/Contents
 PREFIX=$CTSROOT/Resources
+BUNDLE_INCLUDEDIR=$PREFIX/include
+GRAMMAR_LIBDIR=$PREFIX/share/tree-sitter
 EXEPREFIX=$CTSROOT/MacOS
 LIBDIR=$EXEPREFIX/lib
 BUILD_PREFIX=/build-opt
@@ -88,11 +112,13 @@ for arch in ${ARCHES[@]}; do
 done
 
 EMACS_CFLAGS="-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
+TREESIT_CFLAGS="-O3 -Wall"
 
 BUILD_CFLAGS=-I$PKGROOT$BUILD_INCLUDEDIR
+BUILD_BUNDLE_CFLAGS=-I$PKGROOT$BUNDLE_INCLUDEDIR
 BUILD_LDFLAGS=-L$PKGROOT$LIBDIR
 
-NOFTRS=(x xpm jpeg tiff gif png rsvg webp lcms2 tree-sitter native-compilation)
+NOFTRS=(x xpm jpeg tiff gif png rsvg webp lcms2 native-compilation)
 NOFTR_FLAGS=()
 for ftr in ${NOFTRS[@]}; do
   NOFTR_FLAGS+=("--without-$ftr")
@@ -337,6 +363,7 @@ cd $BUILDDIR
 extract_src $EMACSSRC $EMACS
 extract_src $NETTLESRC $NETTLE arch
 extract_src $GNUTLSSRC $GNUTLS arch
+extract_src $TREESITSRC $TREESIT
 
 # Build required libraries to include into the package -----------------
 
@@ -404,6 +431,76 @@ if [ ${#ARCHES[@]} -gt 1 ]; then
 
   gen_univ_binaries
 fi
+
+echo
+echo "******************************************************"
+echo "**************** Building tree-sitter ****************"
+echo "******************************************************"
+echo
+date +"%Y/%m/%d %T - tree-sitter" >> $LOGFILE
+
+echo "cd $TREESIT"
+cd $TREESIT
+
+echo "CFLAGS=\"${ARCH_FLAGS[*]} $TREESIT_CFLAGS\" LDFLAGS=\"${ARCH_FLAGS[*]}\" PREFIX=$PREFIX LIBDIR=$LIBDIR make -j$CORES"
+CFLAGS="${ARCH_FLAGS[*]} $TREESIT_CFLAGS" LDFLAGS="${ARCH_FLAGS[*]}" PREFIX=$PREFIX LIBDIR=$LIBDIR make -j$CORES
+
+echo "DESTDIR=$PKGROOT make install"
+DESTDIR=$PKGROOT make install
+
+# Build builtin language grammar modules for tree-sitter -----------------
+
+echo
+echo "*******************************************************"
+echo "************ Building tree-sitter grammars ************"
+echo "*******************************************************"
+
+for spec in ${TSGRAMMARS[@]}; do
+  repo=${spec#*;}
+  name=${spec%%;*}
+  case $repo in
+  *\;*)
+    subdir=${repo#*;}
+    repo=${repo%%;*}
+    ;;
+  *)
+    subdir=
+    ;;
+  esac
+
+  echo
+  echo "================ $name ================"
+  echo
+  date +"%Y/%m/%d %T - tree-sitter-grammar/$name" >> $LOGFILE
+
+  if [ -d $GRAMMARSRC/$name ]; then
+    echo "cd $GRAMMARSRC/$name"
+    cd $GRAMMARSRC/$name
+    echo "git pull"
+    git pull
+  else
+    if [ ! -d $GRAMMARSRC ]; then
+      echo "mkdir $GRAMMARSRC"
+      mkdir $GRAMMARSRC
+    fi
+    echo "cd $GRAMMARSRC"
+    cd $GRAMMARSRC
+    echo "git clone $repo $name"
+    git clone $repo $name
+    echo "cd $name"
+    cd $name
+  fi
+  if [ -n "$subdir" ]; then
+    echo "cd $subdir"
+    cd $subdir
+  fi
+
+  echo "CFLAGS=\"${ARCH_FLAGS[*]} $BUILD_BUNDLE_CFLAGS\" LDFLAGS=\"${ARCH_FLAGS[*]} $BUILD_LDFLAGS\" PREFIX=$BUILD_PREFIX LIBDIR=$GRAMMAR_LIBDIR make -j$CORES"
+  CFLAGS="${ARCH_FLAGS[*]} $BUILD_BUNDLE_CFLAGS" LDFLAGS="${ARCH_FLAGS[*]} $BUILD_LDFLAGS" PREFIX=$BUILD_PREFIX LIBDIR=$GRAMMAR_LIBDIR make -j$CORES
+
+  echo "DESTDIR=$PKGROOT make install"
+  DESTDIR=$PKGROOT make install
+done
 
 # move unnecessary pkgconfig
 echo "mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/"
