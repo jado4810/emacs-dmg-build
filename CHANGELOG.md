@@ -1,5 +1,11 @@
 # emacs-dmg-build - Changelog
 
+## 3x.x
+
+* Added new patches for older Versions
+    * Scrolling issue on macOS Tahoe - for Emacs-30.2
+    * Updating ns-x-color - for Emacs-30.1 and later
+
 ## 30.2 (2025-08-15)
 
 * For Emacs-30.2
