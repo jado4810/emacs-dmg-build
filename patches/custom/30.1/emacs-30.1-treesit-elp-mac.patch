@@ -1,0 +1,13 @@
+diff -ru emacs-30.1.orig/src/treesit.c emacs-30.1/src/treesit.c
+--- emacs-30.1.orig/src/treesit.c	2025-02-24 00:31:03.000000000 +0900
++++ emacs-30.1/src/treesit.c	2026-04-08 11:35:03.950227735 +0900
+@@ -4249,7 +4249,8 @@
+ Emacs first looks in the directories mentioned in this variable,
+ then in the `tree-sitter' subdirectory of `user-emacs-directory', and
+ then in the system default locations for dynamic libraries, in that order.  */);
+-  Vtreesit_extra_load_path = Qnil;
++#define BUILTIN_LANG_DIR "/Applications/Emacs.app/Contents/MacOS/tree-sitter"
++  Vtreesit_extra_load_path = list1 (build_pure_c_string (BUILTIN_LANG_DIR));
+ 
+   DEFVAR_LISP ("treesit-thing-settings",
+ 	       Vtreesit_thing_settings,
