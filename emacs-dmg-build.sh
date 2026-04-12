@@ -40,18 +40,18 @@ USESPLASH=no
 
 # Target language grammars
 TSGRAMMARS=(
-#    bash;https://github.com/tree-sitter/tree-sitter-bash
-#    json;https://github.com/tree-sitter/tree-sitter-json
-#    yaml;https://github.com/tree-sitter-grammars/tree-sitter-yaml
-#    dockerfile;https://github.com/camdencheek/tree-sitter-dockerfile
-#    c;http://github.com/tree-sitter/tree-sitter-c
-#    cpp;https://github.com/tree-sitter/tree-sitter-cpp
-#    javascript;https://gitbub.com/tree-sitter/tree-sitter-javascript
-#    typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript
-#    tsx:https://github.com/tree-sitter/tree-sitter-typescript;tsx
-#    go;https://github.com/tree-sitter/tree-sitter-go
-#    python;https://github.com/tree-sitter/tree-sitter-python
-#    ruby;https://github.com/tree-sitter/tree-sitter-ruby
+  'bash;https://github.com/tree-sitter/tree-sitter-bash'
+  'json;https://github.com/tree-sitter/tree-sitter-json'
+  'yaml;https://github.com/tree-sitter-grammars/tree-sitter-yaml'
+  'dockerfile;https://github.com/camdencheek/tree-sitter-dockerfile'
+#  'c;http://github.com/tree-sitter/tree-sitter-c'
+#  'cpp;https://github.com/tree-sitter/tree-sitter-cpp'
+#  'javascript;https://github.com/tree-sitter/tree-sitter-javascript'
+#  'typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript'
+#  'tsx;https://github.com/tree-sitter/tree-sitter-typescript;tsx'
+#  'go;https://github.com/tree-sitter/tree-sitter-go'
+#  'python;https://github.com/tree-sitter/tree-sitter-python'
+#  'ruby;https://github.com/tree-sitter/tree-sitter-ruby'
 )
 
 # Target architectures
@@ -75,7 +75,7 @@ EMACSSRC=$SRCDIR/emacs-$EMACSVER
 NETTLESRC=$SRCDIR/nettle-$NETTLEVER
 GNUTLSSRC=$SRCDIR/gnutls-$GNUTLSVER
 TREESITSRC=$SRCDIR/tree-sitter-$TREESITVER
-GRAMMARSRC=$SRCDIR/tree-sitter-grammars
+GRAMMARSSRC=$SRCDIR/tree-sitter-grammars
 
 case $EMACSVER in
 *-rc*)
@@ -88,6 +88,7 @@ esac
 NETTLE=$BUILDDIR/nettle-$NETTLEVER
 GNUTLS=$BUILDDIR/gnutls-$GNUTLSVER
 TREESIT=$BUILDDIR/tree-sitter-$TREESITVER
+GRAMMARS=$BUILDDIR/tree-sitter-grammars
 
 # Directories
 
@@ -95,10 +96,9 @@ PKGROOT=$EMACS/pkgroot
 APPROOT=/Applications
 CTSROOT=$APPROOT/Emacs.app/Contents
 PREFIX=$CTSROOT/Resources
-BUNDLE_INCLUDEDIR=$PREFIX/include
-GRAMMAR_LIBDIR=$PREFIX/share/tree-sitter
 EXEPREFIX=$CTSROOT/MacOS
 LIBDIR=$EXEPREFIX/lib
+GRAMMAR_LIBDIR=$EXEPREFIX/tree-sitter
 BUILD_PREFIX=/build-opt
 BUILD_INCLUDEDIR=$BUILD_PREFIX/include
 
@@ -115,8 +115,8 @@ EMACS_CFLAGS="-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 TREESIT_CFLAGS="-O3 -Wall"
 
 BUILD_CFLAGS=-I$PKGROOT$BUILD_INCLUDEDIR
-BUILD_BUNDLE_CFLAGS=-I$PKGROOT$BUNDLE_INCLUDEDIR
 BUILD_LDFLAGS=-L$PKGROOT$LIBDIR
+BUILD_PKG_CONFIG_PATH=$PKGROOT$BUILD_PREFIX/share/pkgconfig
 
 NOFTRS=(x xpm jpeg tiff gif png rsvg webp lcms2 native-compilation)
 NOFTR_FLAGS=()
@@ -192,7 +192,7 @@ find_patches () {
   done
 }
 
-PATCHES=(`find_patches plus`)
+PATCHES=(`find_patches plus` `find_patches original`)
 [ "$USEINLINE" = "yes" ] && PATCHES+=(`find_patches inline`)
 [ "$USEHRICON" = "yes" ] && PATCHES+=(`find_patches custom icons`)
 [ "$USESPLASH" = "yes" ] && PATCHES+=(`find_patches custom splash`)
@@ -245,23 +245,22 @@ extract_src () {
   fi
 }
 
-install_arch () {
+make_install_arch () {
   arch=$1
-  shift
 
   for dir in ${PKGROOT}_*; do
     # Install under $PKGROOT only in the first time (to be the base tree)
     if [ $dir = "${PKGROOT}_*" ]; then
-      echo "DESTDIR=$PKGROOT $@"
-      DESTDIR=$PKGROOT "$@"
+      echo "make install DESTDIR=$PKGROOT"
+      make install DESTDIR=$PKGROOT
     fi
     break
   done
 
   if [ ${#ARCHES[@]} -gt 1 ]; then
     # Install under trees for each architectures (to pick binaries)
-    echo "DESTDIR=${PKGROOT}_$arch $@"
-    DESTDIR=${PKGROOT}_$arch "$@"
+    echo "make install DESTDIR=${PKGROOT}_$arch"
+    make install DESTDIR=${PKGROOT}_$arch
   fi
 }
 
@@ -295,58 +294,56 @@ gen_univ_binaries () {
   done
 }
 
-fake_libs () {
-  if [ -d $LIBDIR ]; then
+# Clone or pull tree-sitter grammars source repositories -----------------
 
-    # Escape existing libraries
-    mv $LIBDIR ${LIBDIR}_
-    # Make symlink to the place where the libraries are to be installed,
-    # since the libraries can be linked only on the actual path in macOS
-    ln -s $PKGROOT$LIBDIR $LIBDIR || {
-      mv ${LIBDIR}_ $LIBDIR
-      exit 1
-    }
+if [ "$1" = "-n" -o "$1" = "--no-pull" ]; then
 
-    echo "$@"
-    "$@" || {
-      rm -f $LIBDIR && mv ${LIBDIR}_ $LIBDIR
-      exit 1
-    }
+  notfound=0
+  for spec in ${TSGRAMMARS[@]}; do
+    name=${spec%%;*}
 
-    # Restore libraries
-    rm -f $LIBDIR && mv ${LIBDIR}_ $LIBDIR
+    if [ ! -d $GRAMMARSSRC/$name ]; then
+      echo >&2 "tree-sitter grammar source for $name not found."
+      notfound=1
+    fi
+  done
 
-  else
-
-    # Temporarily mkdir the app directory since it has not been installed yet
-    mkdir -p $EXEPREFIX
-    # Make symlink to the place where the libraries are to be installed,
-    # since the libraries can be linked only on the actual path in macOS
-    ln -s $PKGROOT$LIBDIR $LIBDIR || {
-      for dir in $EXEPREFIX $CTSROOT $APPROOT/Emacs.app; do
-        rmdir $dir
-      done
-      exit 1
-    }
-
-    echo "$@"
-    "$@" || {
-      rm -f $LIBDIR
-      for dir in $EXEPREFIX $CTSROOT $APPROOT/Emacs.app; do
-        rmdir $dir
-      done
-      exit 1
-    }
-
-    # Restore libraries
-    rm -f $LIBDIR && {
-      # Delete temporarily-made app directory
-      for dir in $EXEPREFIX $CTSROOT $APPROOT/Emacs.app; do
-        rmdir $dir || break
-      done
-    }
+  if [ $notfound -ne 0 ]; then
+    exit 1
   fi
-}
+
+else
+
+  echo
+  echo "**********************************************************************"
+  echo "**************** Pulling tree-sitter grammars sources ****************"
+  echo "**********************************************************************"
+  echo
+  date +"%Y/%m/%d %T - Pull" > $LOGFILE
+
+  for spec in ${TSGRAMMARS[@]}; do
+    repo=${spec#*;}
+    repo=${repo%%;*}
+    name=${spec%%;*}
+
+    if [ -d $GRAMMARSSRC/$name ]; then
+      echo "cd $GRAMMARSSRC/$name"
+      cd $GRAMMARSSRC/$name
+      echo "git pull"
+      git pull
+    else
+      if [ ! -d $GRAMMARSSRC ]; then
+        echo "mkdir $GRAMMARSSRC"
+        mkdir $GRAMMARSSRC
+      fi
+      echo "cd $GRAMMARSSRC"
+      cd $GRAMMARSSRC
+      echo "git clone $repo $name"
+      git clone $repo $name
+    fi
+  done
+
+fi
 
 # Extract source archives -----------------
 
@@ -365,6 +362,14 @@ extract_src $NETTLESRC $NETTLE arch
 extract_src $GNUTLSSRC $GNUTLS arch
 extract_src $TREESITSRC $TREESIT
 
+if [ -d $GRAMMARS ]; then
+  echo "rm -rf $GRAMMARS"
+  rm -rf $GRAMMARS
+fi
+
+echo "cp -rp $GRAMMARSSRC $GRAMMARS"
+cp -rp $GRAMMARSSRC $GRAMMARS
+
 # Build required libraries to include into the package -----------------
 
 echo
@@ -382,13 +387,29 @@ for arch in ${ARCHES[@]}; do
   echo "cd ${NETTLE}_$arch"
   cd ${NETTLE}_$arch
 
-  echo "CFLAGS=\"-arch $arch\" LDFLAGS=\"-arch $arch\" arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp"
-  CFLAGS="-arch $arch" LDFLAGS="-arch $arch" arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp
+  (
+    echo
+    echo "---- Entering subshell ----"
+    echo
+    echo "export CFLAGS=\"-arch $arch\""
+    echo "export LDFLAGS=\"-arch $arch\""
+    echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
+    export CFLAGS="-arch $arch"
+    export LDFLAGS="-arch $arch"
+    export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-  echo "make -j$CORES"
-  make -j$CORES
+    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp"
+    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp
+    echo
+    echo "---- Exiting subshell ----"
+    echo
+  )
 
-  install_arch $arch make install
+  # Adjust install_name to be relative to @rpath for bundled libraries
+  echo "make -j$CORES libdir=@rpath"
+  make -j$CORES libdir=@rpath
+
+  make_install_arch $arch
 done
 
 if [ ${#ARCHES[@]} -gt 1 ]; then
@@ -415,12 +436,41 @@ for arch in ${ARCHES[@]}; do
   echo "cd ${GNUTLS}_$arch"
   cd ${GNUTLS}_$arch
 
-  echo "CFLAGS=\"-arch $arch\" LDFLAGS=\"-arch $arch\" NETTLE_CFLAGS=\"$BUILD_CFLAGS\" NETTLE_LIBS=\"$BUILD_LDFLAGS -lnettle\" HOGWEED_CFLAGS=\"$BUILD_CFLAGS\" HOGWEED_LIBS=\"$BUILD_LDFLAGS -lhogweed\" arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --disable-static --disable-tools"
-  CFLAGS="-arch $arch" LDFLAGS="-arch $arch" NETTLE_CFLAGS="$BUILD_CFLAGS" NETTLE_LIBS="$BUILD_LDFLAGS -lnettle" HOGWEED_CFLAGS="$BUILD_CFLAGS" HOGWEED_LIBS="$BUILD_LDFLAGS -lhogweed" arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --disable-static --disable-tools
+  (
+    echo
+    echo "---- Entering subshell ----"
+    echo
+    echo "export CFLAGS=\"-arch $arch\""
+    echo "export LDFLAGS=\"-arch $arch\""
+    echo "export NETTLE_CFLAGS=\"$BUILD_CFLAGS\""
+    echo "export NETTLE_LIBS=\"$BUILD_LDFLAGS -lnettle\""
+    echo "export HOGWEED_CFLAGS=\"$BUILD_CFLAGS\""
+    echo "export HOGWEED_LIBS=\"$BUILD_LDFLAGS -lhogweed\""
+    echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
+    export CFLAGS="-arch $arch"
+    export LDFLAGS="-arch $arch"
+    export NETTLE_CFLAGS="$BUILD_CFLAGS"
+    export NETTLE_LIBS="$BUILD_LDFLAGS -lnettle"
+    export HOGWEED_CFLAGS="$BUILD_CFLAGS"
+    export HOGWEED_LIBS="$BUILD_LDFLAGS -lhogweed"
+    export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-  fake_libs make -j$CORES
+    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools"
+    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools
+    echo
+    echo "---- Exiting subshell ----"
+    echo
+  )
 
-  install_arch $arch make install
+  # Adjust install_name to be relative to @rpath for bundled libraries
+  # xxx libtool requires absolute libdir, so "make libdir=@rpath" will not work
+  echo "sed -ie '/-install_name/s/\\\\\\$rpath/@rpath/' libtool"
+  sed -ie '/-install_name/s/\\\$rpath/@rpath/' libtool
+
+  echo "make -j$CORES"
+  make -j$CORES
+
+  make_install_arch $arch
 done
 
 if [ ${#ARCHES[@]} -gt 1 ]; then
@@ -442,18 +492,39 @@ date +"%Y/%m/%d %T - tree-sitter" >> $LOGFILE
 echo "cd $TREESIT"
 cd $TREESIT
 
-echo "CFLAGS=\"${ARCH_FLAGS[*]} $TREESIT_CFLAGS\" LDFLAGS=\"${ARCH_FLAGS[*]}\" PREFIX=$PREFIX LIBDIR=$LIBDIR make -j$CORES"
-CFLAGS="${ARCH_FLAGS[*]} $TREESIT_CFLAGS" LDFLAGS="${ARCH_FLAGS[*]}" PREFIX=$PREFIX LIBDIR=$LIBDIR make -j$CORES
+(
+  echo
+  echo "---- Entering subshell ----"
+  echo
+  echo "export CFLAGS=\"${ARCH_FLAGS[*]} $TREESIT_CFLAGS\""
+  echo "export LDFLAGS=\"${ARCH_FLAGS[*]}\""
+  echo "export PREFIX=$BUILD_PREFIX"
+  echo "export LIBDIR=$LIBDIR"
+  export CFLAGS="${ARCH_FLAGS[*]} $TREESIT_CFLAGS"
+  export LDFLAGS="${ARCH_FLAGS[*]}"
+  export PREFIX=$BUILD_PREFIX
+  export LIBDIR=$LIBDIR
 
-echo "DESTDIR=$PKGROOT make install"
-DESTDIR=$PKGROOT make install
+  echo "make tree-sitter.pc"
+  make tree-sitter.pc
+
+  # Adjust install_name to be relative to @rpath for bundled libraries
+  echo "make -j$CORES LIBDIR=@rpath"
+  make -j$CORES LIBDIR=@rpath
+
+  echo "make install DESTDIR=$PKGROOT"
+  make install DESTDIR=$PKGROOT
+  echo
+  echo "---- Exiting subshell ----"
+  echo
+)
 
 # Build builtin language grammar modules for tree-sitter -----------------
 
 echo
-echo "*******************************************************"
-echo "************ Building tree-sitter grammars ************"
-echo "*******************************************************"
+echo "***************************************************************"
+echo "**************** Building tree-sitter grammars ****************"
+echo "***************************************************************"
 
 for spec in ${TSGRAMMARS[@]}; do
   repo=${spec#*;}
@@ -461,7 +532,6 @@ for spec in ${TSGRAMMARS[@]}; do
   case $repo in
   *\;*)
     subdir=${repo#*;}
-    repo=${repo%%;*}
     ;;
   *)
     subdir=
@@ -473,38 +543,39 @@ for spec in ${TSGRAMMARS[@]}; do
   echo
   date +"%Y/%m/%d %T - tree-sitter-grammar/$name" >> $LOGFILE
 
-  if [ -d $GRAMMARSRC/$name ]; then
-    echo "cd $GRAMMARSRC/$name"
-    cd $GRAMMARSRC/$name
-    echo "git pull"
-    git pull
-  else
-    if [ ! -d $GRAMMARSRC ]; then
-      echo "mkdir $GRAMMARSRC"
-      mkdir $GRAMMARSRC
-    fi
-    echo "cd $GRAMMARSRC"
-    cd $GRAMMARSRC
-    echo "git clone $repo $name"
-    git clone $repo $name
-    echo "cd $name"
-    cd $name
-  fi
   if [ -n "$subdir" ]; then
-    echo "cd $subdir"
-    cd $subdir
+    echo "cd $GRAMMARSSRC/$name/$subdir"
+    cd $GRAMMARSSRC/$name/$subdir
+  else
+    echo "cd $GRAMMARSSRC/$name"
+    cd $GRAMMARSSRC/$name
   fi
+  echo "make clean"
+  make clean
 
-  echo "CFLAGS=\"${ARCH_FLAGS[*]} $BUILD_BUNDLE_CFLAGS\" LDFLAGS=\"${ARCH_FLAGS[*]} $BUILD_LDFLAGS\" PREFIX=$BUILD_PREFIX LIBDIR=$GRAMMAR_LIBDIR make -j$CORES"
-  CFLAGS="${ARCH_FLAGS[*]} $BUILD_BUNDLE_CFLAGS" LDFLAGS="${ARCH_FLAGS[*]} $BUILD_LDFLAGS" PREFIX=$BUILD_PREFIX LIBDIR=$GRAMMAR_LIBDIR make -j$CORES
+  (
+    echo
+    echo "---- Entering subshell ----"
+    echo
+    echo "export CFLAGS=\"${ARCH_FLAGS[*]} $BUILD_CFLAGS\""
+    echo "export LDFLAGS=\"${ARCH_FLAGS[*]} $BUILD_LDFLAGS\""
+    echo "export LIBDIR=$GRAMMAR_LIBDIR"
+    export CFLAGS="${ARCH_FLAGS[*]} $BUILD_CFLAGS"
+    export LDFLAGS="${ARCH_FLAGS[*]} $BUILD_LDFLAGS"
+    export LIBDIR=$GRAMMAR_LIBDIR
 
-  echo "DESTDIR=$PKGROOT make install"
-  DESTDIR=$PKGROOT make install
+    # Adjust install_name to be relative to @rpath for bundled libraries
+    echo "make -j$CORES LIBDIR=@rpath SOEXTVER=dylib"
+    make -j$CORES LIBDIR=@rpath SOEXTVER=dylib
+
+    echo "install -d $PKGROOT$GRAMMAR_LIBDIR"
+    install -d $PKGROOT$GRAMMAR_LIBDIR
+    echo "install -m644 libtree-sitter-$name.dylib $PKGROOT$GRAMMAR_LIBDIR/libtree-sitter-$name.dylib"
+    install -m644 libtree-sitter-$name.dylib $PKGROOT$GRAMMAR_LIBDIR/libtree-sitter-$name.dylib
+    echo
+    echo "---- Exiting subshell ----"
+  )
 done
-
-# move unnecessary pkgconfig
-echo "mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/"
-mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/
 
 # Build Emacs -----------------
 
@@ -564,12 +635,42 @@ fi
 #echo "sed -e 's/\${libexecdir}\\/emacs\\/\${version}\\/\${configuration}/\${libexecdir}/' -i '' configure Makefile.in"
 #sed -e 's/${libexecdir}\/emacs\/${version}\/${configuration}/${libexecdir}/' -i '' configure Makefile.in
 
-echo "CFLAGS=\"${ARCH_FLAGS[*]} $EMACS_CFLAGS\" LDFLAGS=\"${ARCH_FLAGS[*]}\" LIBGNUTLS_CFLAGS=\"$BUILD_CFLAGS\" LIBGNUTLS_LIBS=\"$BUILD_LDFLAGS -lgnutls\" ./configure --with-ns --with-modules ${NOFTR_FLAGS[*]} --enable-locallisppath=\"$SITELISP\""
-CFLAGS="${ARCH_FLAGS[*]} $EMACS_CFLAGS" LDFLAGS="${ARCH_FLAGS[*]}" LIBGNUTLS_CFLAGS="$BUILD_CFLAGS" LIBGNUTLS_LIBS="$BUILD_LDFLAGS -lgnutls" ./configure --with-ns --with-modules ${NOFTR_FLAGS[*]} --enable-locallisppath="$SITELISP"
+(
+  echo
+  echo "---- Entering subshell ----"
+  echo
+  echo "export CFLAGS=\"${ARCH_FLAGS[*]} $EMACS_CFLAGS\""
+  echo "export LDFLAGS=\"${ARCH_FLAGS[*]}\""
+  echo "export LIBGNUTLS_CFLAGS=\"$BUILD_CFLAGS\""
+  echo "export LIBGNUTLS_LIBS=\"$BUILD_LDFLAGS -lgnutls\""
+  echo "export TREE_SITTER_CFLAGS=\"$BUILD_CFLAGS\""
+  echo "export TREE_SITTER_LIBS=\"$BUILD_LDFLAGS -ltreesit\""
+  echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
+  export CFLAGS="${ARCH_FLAGS[*]} $EMACS_CFLAGS"
+  # Set LC_RPATH to @executable_path/lib for bundled libraries
+  export LDFLAGS="${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib"
+  export LIBGNUTLS_CFLAGS="$BUILD_CFLAGS"
+  export LIBGNUTLS_LIBS="$BUILD_LDFLAGS -lgnutls"
+  export TREE_SITTER_CFLAGS="$BUILD_CFLAGS"
+  export TREE_SITTER_LIBS="$BUILD_LDFLAGS -ltree-sitter"
+  export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-fake_libs make -j$CORES
+  echo "./configure --with-ns --with-modules ${NOFTR_FLAGS[*]} --enable-locallisppath=\"$SITELISP\""
+  ./configure --with-ns --with-modules ${NOFTR_FLAGS[*]} --enable-locallisppath="$SITELISP"
+  echo
+  echo "---- Exiting subshell ----"
+  echo
+)
 
-fake_libs make install
+# Bundles libraries are to be shown under src/lib while dumping emacs
+echo "ln -s $PKGROOT$LIBDIR src/lib"
+ln -s $PKGROOT$LIBDIR src/lib
+
+echo "make -j$CORES"
+make -j$CORES
+
+echo "make install"
+make install
 
 #mkdir -p $PKGROOT$APPROOT
 #cp -Rp mac/Emacs.app $PKGROOT$APPROOT
@@ -596,6 +697,43 @@ if [ "$USEHRICON" = "yes" ]; then
     cp -p $HRICONDIR/$file-hires-icons $PKGROOT$PREFIX/etc
   done
 fi
+
+# Move unnecessary pkgconfig
+echo "mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/"
+mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/
+
+# Remove library symlinks, static libraries and library stabs
+dylibs=()
+for file in $PKGROOT$LIBDIR/*; do
+  if [ -L $file ]; then
+    echo "rm -f $file"
+    rm -f $file
+  else
+    case $file in
+    *.a|*.la)
+      echo "rm -f $file"
+      rm -f $file
+      ;;
+    *.dylib)
+      dylibs+=($file)
+      ;;
+    esac
+  fi
+done
+
+# Adjust filenaes and permissions of libraries
+for file in "${dylibs[@]}"; do
+  iname=`otool -D $file | grep @rpath | uniq`
+  ifile=$PKGROOT$LIBDIR/${iname#*/}
+  if [ ! $file = $ifile ]; then
+    echo "mv $file $ifile"
+    mv $file $ifile
+  fi
+  if [ -x $ifile ]; then
+    echo "chmod 644 $ifile"
+    chmod 644 $ifile
+  fi
+done
 
 echo
 echo "************************************************"
