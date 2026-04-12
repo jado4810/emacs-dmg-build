@@ -2,6 +2,10 @@
 
 ## 3x.x
 
+* Now builtin libraries are built with install_name defined relative to @rpath
+  and executables are built with LC_RPATH defined, so it can be run from any
+  location where it is extracted
+* Support treesit and add some builtin grammars
 * Added new patches for older Versions
     * Scrolling issue on macOS Tahoe - for Emacs-30.2
     * Updating ns-x-color - for Emacs-30.1 and later
