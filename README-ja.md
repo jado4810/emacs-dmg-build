@@ -111,13 +111,13 @@ macOS環境では事実上PNG画像しか使われないと思われますが、
 treesit用に組み込む言語の文法規則の言語と取得元の情報を`TSGRAMMARS`に設定してください。
 
 デフォルトでは、Emacs30で動作確認が取れている言語を指定しています。
-必要に応じて適宜取捨選択してください。
+適宜取捨選択してください。
 
 書式は以下のとおりです。
 取得したリポジトリーのサブディレクトリーでビルドする場合、3番目の要素を定義してください。
 
 ```bash
-'言語名;取得元GitリポジトリーURL[;サブディレクトリー]
+'言語名;取得元GitリポジトリーURL[;サブディレクトリー]'
 ```
 
 #### h. ビルド対象のアーキテクチャー
@@ -210,7 +210,7 @@ $ sh emacs-dmg-build.sh [-n]
 ライセンス
 ----------
 
-本スクリプトと[patches/custom](./patches/custom)以下のパッチについては[CC0](./LICENSE.txt)で配布します。
+本スクリプトと[patches/custom](./patches/custom)および[patches/original](./patches/original)以下のパッチについては[CC0](./LICENSE.txt)で配布します。
 
 [patches/plus](./patches/plus)および[patches/inline](./patches/inline)以下のパッチや、[icons](./icons)以下のアイコンデータは、異なるライセンス条件で配布されているものを収録したものです。
 詳細は各ディレクトリー以下のLICENSEファイルもしくはREADMEファイルを参照ください。
