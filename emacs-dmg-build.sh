@@ -398,8 +398,8 @@ for arch in ${ARCHES[@]}; do
     export LDFLAGS="-arch $arch"
     export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp"
-    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp
+    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation"
+    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation
     echo
     echo "---- Exiting subshell ----"
     echo
@@ -455,8 +455,8 @@ for arch in ${ARCHES[@]}; do
     export HOGWEED_LIBS="$BUILD_LDFLAGS -lhogweed"
     export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools"
-    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools
+    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc"
+    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc
     echo
     echo "---- Exiting subshell ----"
     echo
@@ -699,8 +699,12 @@ if [ "$USEHRICON" = "yes" ]; then
 fi
 
 # Move unnecessary pkgconfig
-echo "mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/"
-mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share/
+if [ ! -d $PKGROOT$BUILD_PREFIX/share ]; then
+  echo "mkdir $PKGROOT$BUILD_PREFIX/share"
+  mkdir $PKGROOT$BUILD_PREFIX/share
+fi
+echo "mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share"
+mv $PKGROOT$LIBDIR/pkgconfig $PKGROOT$BUILD_PREFIX/share
 
 # Remove library symlinks, static libraries and library stabs
 dylibs=()
