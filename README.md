@@ -15,7 +15,7 @@ Overview
 A build script to make a dmg package of Gnu Emacs for macOS.
 It will generate the universal binaries with Apple Silicon.
 
-It works without any dependencies on external libraries; having GnuTLS runtimes for SSL/TLS connections, and handling images by standard ns GUI functions.
+It works without any dependefncies on external libraries; supporting treesit available since Emacs29 with several language grammar rules, having GnuTLS runtimes for SSL/TLS connections, and handling images by standard ns GUI functions.
 
 Applies some patches from [Emacs Plus](https://github.com/d12frosted/homebrew-emacs-plus).
 Also, [inline patch](https://github.com/takaxp/ns-inline-patch) would be available useful for CJK environment.
@@ -36,13 +36,13 @@ Available on Gnu mirror ([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gn
 
 #### b. Source of nettle
 
-Imprementation of cryptographic algorithm, required for GnuTLS.
+Implementation of cryptographic algorithm, required for GnuTLS.
 
 Available on Gnu mirror ([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/)).
 
 #### c. Source of GnuTLS
 
-Imprementation of SSL/TLS.
+Implementation of SSL/TLS.
 Emacs requires GnuTLS, not OpenSSL coming with macOS.
 
 Available on official site ([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html)).
@@ -52,13 +52,23 @@ Available on official site ([https://www.gnutls.org/download.html](https://www.g
 > We checked the versions specified in the build script, but newer ones should work, especially for required libraries.
 > In that case, set versions in the script to match retrieved ones.
 
+#### d. Source of tree-sitter
+
+Implementation of parsing algorithm used by treesit.
+
+Available on releases page ([https://github.com/tree-sitter/tree-sitter/releases](https://github.com/tree-sitter/tree-sitter/releases)) under GitHub project site.
+
+> [!NOTE]
+>
+> We get sources of required grammar rules automatically with git.
+
 ### 2\. Setup build environment
 
 Edit the build script (`emacs-dmg-build.sh`) to modify the following variables near the top.
 
 #### a. Versions of each sources
 
-Set `EMACSVER`, `NETTLEVER` and `GNUTLSVER` values to match those of retrieved ones.
+Set `EMACSVER`, `NETTLEVER`, `GNUTLSVER` and `TREESITVER` values to match those of retrieved ones.
 
 #### b. Path where site-lisp will be stored
 
@@ -93,7 +103,19 @@ If enabled, `splash.png`, `splash.xpm` and `splash.pbm` are overridden, and the 
 
 It seems that only PNG images are actually used in the macOS environment, but XPM or PBM images might be used in the environment with low color depth.
 
-#### g. Target architectures
+#### g. Language rules to be included
+
+Set `TSGRAMMARS` to language and source information to be included.
+
+By default, we specify those that has been confirmed to work with Emacs30, so select them as appropriate.
+
+The format of each line is like below; to build at the subdirectory, specify the third element.
+
+``` bash
+'language;url-of-git-repository-to-get-source[;subdirectory]'
+```
+
+#### h. Target architectures
 
 Set `ARCHES` as an array of target architectures names.
 By default, it will build the universal binaries of arm64 and x86_64.
@@ -105,7 +127,7 @@ In intel environment, set `ARCHES=(x86_64)` because it cannot build arm64 binari
 > To build Apple Silicon only binaries, set `ARCHES=(arm64)`.
 > This will save a little on installation size, however it will not have much impact on space as other applications, because of most footprint by lisps and pdumps in the case of Emacsen.
 
-#### h. Number of cores to use on build
+#### i. Number of cores to use on build
 
 Set `CORES` to the number of parallel processes on build.
 It will be an argument of `-j` option for make.
@@ -167,10 +189,14 @@ $ brew install pkgconf
 ### 5\. Execute the build script
 
 Execute the build script to create the dmg package under `build`.
-It takes about 10 minutes in the environment of Apple M3.
+
+First, it gets required sources of grammar rules for treesit.
+It tries to update to the current version with "git pull" if already got; `-n` available to disable updating.
+
+It takes about 6 minutes in the environment of Apple M5, excluding getting or updating of sources of grammar rules.
 
 ```console
-$ sh emacs-dmg-build.sh
+$ sh emacs-dmg-build.sh [-n]
 ```
 
 The source packages are expanded under `build`.
