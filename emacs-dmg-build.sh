@@ -639,15 +639,15 @@ fi
   echo
   echo "---- Entering subshell ----"
   echo
+  # Set LC_RPATH to @executable_path/lib via LDFLAGS for bundled libraries
   echo "export CFLAGS=\"${ARCH_FLAGS[*]} $EMACS_CFLAGS\""
-  echo "export LDFLAGS=\"${ARCH_FLAGS[*]}\""
+  echo "export LDFLAGS=\"${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib\""
   echo "export LIBGNUTLS_CFLAGS=\"$BUILD_CFLAGS\""
   echo "export LIBGNUTLS_LIBS=\"$BUILD_LDFLAGS -lgnutls\""
   echo "export TREE_SITTER_CFLAGS=\"$BUILD_CFLAGS\""
   echo "export TREE_SITTER_LIBS=\"$BUILD_LDFLAGS -ltreesit\""
   echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
   export CFLAGS="${ARCH_FLAGS[*]} $EMACS_CFLAGS"
-  # Set LC_RPATH to @executable_path/lib for bundled libraries
   export LDFLAGS="${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib"
   export LIBGNUTLS_CFLAGS="$BUILD_CFLAGS"
   export LIBGNUTLS_LIBS="$BUILD_LDFLAGS -lgnutls"
