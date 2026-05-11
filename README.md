@@ -13,7 +13,7 @@ Overview
 --------
 
 A build script to make a dmg package of Gnu Emacs for macOS.
-It will generate the universal binaries with Apple Silicon.
+It will generate the universal binaries with Apple Silicon running macOS26 Tahoe or prior.
 
 It works without any dependefncies on external libraries; supporting treesit available since Emacs29 with several language grammar rules, having GnuTLS runtimes for SSL/TLS connections, and handling images by standard ns GUI functions.
 
@@ -118,14 +118,11 @@ The format of each line is like below; to build at the subdirectory, specify the
 #### h. Target architectures
 
 Set `ARCHES` as an array of target architectures names.
-By default, it will build the universal binaries of arm64 and x86_64.
+Defined `ARCHES=(arm64)` by default, to build the uni-arch binaries for Apple Silicon.
+Set `ARCHES=(x86_64)` in Intel environments.
 
-In intel environment, set `ARCHES=(x86_64)` because it cannot build arm64 binaries.
-
-> [!NOTE]
->
-> To build Apple Silicon only binaries, set `ARCHES=(arm64)`.
-> This will save a little on installation size, however it will not have much impact on space as other applications, because of most footprint by lisps and pdumps in the case of Emacsen.
+On Apple Silicon running macOS26 Tahoe or prior, set `ARCHES=(arm64 x86_64)` to build the universal binaries.
+Or `ARCHES=(x86_64)` to cross-build the Intel binaries.
 
 #### i. Number of cores to use on build
 
@@ -137,7 +134,7 @@ The default value is 4, and it works fine in the recent mac environments.
 > [!NOTE]
 >
 > In the environment with more than 4 performance cores, it will reduce a little on build time to set it to the number of those cores.
-> However, since most of build time is spent in executing configure on cross building of GnuTLS, it seems to be within the variability.
+> However, since over half of build time is spent in executing configure, it seems to be within the variability.
 
 ### 3\. Store custom images
 
