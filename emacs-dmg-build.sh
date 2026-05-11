@@ -106,10 +106,16 @@ LOGFILE=$SCRIPTDIR/build.log
 
 # Options
 
-ARCH_FLAGS=()
-for arch in ${ARCHES[@]}; do
-  ARCH_FLAGS+=("-arch $arch")
-done
+if [ ${#ARCHES[@]} -gt 1 ]; then
+  BUILD_MODE=universal
+  ARCH_FLAGS=()
+  for arch in ${ARCHES[@]}; do
+    ARCH_FLAGS+=("-arch $arch")
+  done
+else
+  BUILD_MODE=
+  ARCH_FLAGS=("-arch ${ARCHES[0]}")
+fi
 
 EMACS_CFLAGS="-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
 TREESIT_CFLAGS="-O3 -Wall"
@@ -248,16 +254,13 @@ extract_src () {
 make_install_arch () {
   arch=$1
 
-  for dir in ${PKGROOT}_*; do
+  if [ $arch = ${ARCHES[0]} ]; then
     # Install under $PKGROOT only in the first time (to be the base tree)
-    if [ $dir = "${PKGROOT}_*" ]; then
-      echo "make install DESTDIR=$PKGROOT"
-      make install DESTDIR=$PKGROOT
-    fi
-    break
-  done
+    echo "make install DESTDIR=$PKGROOT"
+    make install DESTDIR=$PKGROOT
+  fi
 
-  if [ ${#ARCHES[@]} -gt 1 ]; then
+  if [ "$BUILD_MODE" = "universal" ]; then
     # Install under trees for each architectures (to pick binaries)
     echo "make install DESTDIR=${PKGROOT}_$arch"
     make install DESTDIR=${PKGROOT}_$arch
@@ -412,7 +415,7 @@ for arch in ${ARCHES[@]}; do
   make_install_arch $arch
 done
 
-if [ ${#ARCHES[@]} -gt 1 ]; then
+if [ "$BUILD_MODE" = "universal" ]; then
   echo
   echo "================ Creating universal binaries ================"
   echo
@@ -473,7 +476,7 @@ for arch in ${ARCHES[@]}; do
   make_install_arch $arch
 done
 
-if [ ${#ARCHES[@]} -gt 1 ]; then
+if [ "$BUILD_MODE" = "universal" ]; then
   echo
   echo "================ Creating universal binaries ================"
   echo
