@@ -467,8 +467,8 @@ for arch in ${ARCHES[@]}; do
 
   # Adjust install_name to be relative to @rpath for bundled libraries
   # xxx libtool requires absolute libdir, so "make libdir=@rpath" will not work
-  echo "sed -ie '/-install_name/s/\\\\\\$rpath/@rpath/' libtool"
-  sed -ie '/-install_name/s/\\\$rpath/@rpath/' libtool
+  echo "sed -e '/-install_name/s/\\\\\\$rpath/@rpath/' -i '' libtool"
+  sed -e '/-install_name/s/\\\$rpath/@rpath/' -i '' libtool
 
   echo "make -j$CORES"
   make -j$CORES
