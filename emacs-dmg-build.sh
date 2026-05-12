@@ -519,7 +519,6 @@ cd $TREESIT
   make install DESTDIR=$PKGROOT
   echo
   echo "---- Exiting subshell ----"
-  echo
 )
 
 # Build builtin language grammar modules for tree-sitter -----------------
