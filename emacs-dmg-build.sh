@@ -112,9 +112,11 @@ if [ ${#ARCHES[@]} -gt 1 ]; then
   for arch in ${ARCHES[@]}; do
     ARCH_FLAGS+=("-arch $arch")
   done
+elif [ ! ${ARCHES[0]} = `arch` ]; then
+  BUILD_MODE=cross
+  ARCH_FLAGS=("-arch ${ARCHES[0]}")
 else
   BUILD_MODE=
-  ARCH_FLAGS=("-arch ${ARCHES[0]}")
 fi
 
 EMACS_CFLAGS="-O2 -DFD_SETSIZE=10000 -DDARWIN_UNLIMITED_SELECT"
@@ -361,8 +363,15 @@ echo "cd $BUILDDIR"
 cd $BUILDDIR
 
 extract_src $EMACSSRC $EMACS
-extract_src $NETTLESRC $NETTLE arch
-extract_src $GNUTLSSRC $GNUTLS arch
+
+if [ "$BUILD_MODE" = "universal" ]; then
+  extract_src $NETTLESRC $NETTLE arch
+  extract_src $GNUTLSSRC $GNUTLS arch
+else
+  extract_src $NETTLESRC $NETTLE
+  extract_src $GNUTLSSRC $GNUTLS
+fi
+
 extract_src $TREESITSRC $TREESIT
 
 if [ -d $GRAMMARS ]; then
@@ -380,29 +389,45 @@ echo "*************************************************"
 echo "**************** Building nettle ****************"
 echo "*************************************************"
 
-# Build by each architectures and concat, due to existence of assembly codes
 for arch in ${ARCHES[@]}; do
-  echo
-  echo "================ Target arch: $arch ================"
-  echo
-  date +"%Y/%m/%d %T - nettle/$arch" >> $LOGFILE
+  if [ "$BUILD_MODE" = "universal" ]; then
+    echo
+    echo "================ Target arch: $arch ================"
+    echo
+    date +"%Y/%m/%d %T - nettle/$arch" >> $LOGFILE
 
-  echo "cd ${NETTLE}_$arch"
-  cd ${NETTLE}_$arch
+    # Build by each architectures and concat, due to existence of assembly codes
+    echo "cd ${NETTLE}_$arch"
+    cd ${NETTLE}_$arch
+  else
+    echo
+    date +"%Y/%m/%d %T - nettle" >> $LOGFILE
+
+    echo "cd ${NETTLE}"
+    cd ${NETTLE}
+  fi
 
   (
     echo
     echo "---- Entering subshell ----"
     echo
-    echo "export CFLAGS=\"-arch $arch\""
-    echo "export LDFLAGS=\"-arch $arch\""
+    if [ -n "$BUILD_MODE" ]; then
+      echo "export CFLAGS=\"-arch $arch\""
+      echo "export LDFLAGS=\"-arch $arch\""
+      export CFLAGS="-arch $arch"
+      export LDFLAGS="-arch $arch"
+    fi
     echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
-    export CFLAGS="-arch $arch"
-    export LDFLAGS="-arch $arch"
     export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation"
-    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation
+    if [ -n "$BUILD_MODE" ]; then
+      echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation"
+      arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation
+    else
+      echo "./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation"
+      ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --disable-static --enable-mini-gmp --disable-documentation
+    fi
+
     echo
     echo "---- Exiting subshell ----"
     echo
@@ -429,37 +454,53 @@ echo "*************************************************"
 echo "**************** Building GnuTLS ****************"
 echo "*************************************************"
 
-# Build by each architectures and concat, due to existence of assembly codes
 for arch in ${ARCHES[@]}; do
-  echo
-  echo "================ Target arch: $arch ================"
-  echo
-  date +"%Y/%m/%d %T - GnuTLS/$arch" >> $LOGFILE
+  if [ "$BUILD_MODE" = "universal" ]; then
+    echo
+    echo "================ Target arch: $arch ================"
+    echo
+    date +"%Y/%m/%d %T - GnuTLS/$arch" >> $LOGFILE
 
-  echo "cd ${GNUTLS}_$arch"
-  cd ${GNUTLS}_$arch
+    # Build by each architectures and concat, due to existence of assembly codes
+    echo "cd ${GNUTLS}_$arch"
+    cd ${GNUTLS}_$arch
+  else
+    echo
+    date +"%Y/%m/%d %T - GnuTLS" >> $LOGFILE
+
+    echo "cd ${GNUTLS}"
+    cd ${GNUTLS}
+  fi
 
   (
     echo
     echo "---- Entering subshell ----"
     echo
-    echo "export CFLAGS=\"-arch $arch\""
-    echo "export LDFLAGS=\"-arch $arch\""
+    if [ -n "$BUILD_MODE" ]; then
+      echo "export CFLAGS=\"-arch $arch\""
+      echo "export LDFLAGS=\"-arch $arch\""
+      export CFLAGS="-arch $arch"
+      export LDFLAGS="-arch $arch"
+    fi
     echo "export NETTLE_CFLAGS=\"$BUILD_CFLAGS\""
     echo "export NETTLE_LIBS=\"$BUILD_LDFLAGS -lnettle\""
     echo "export HOGWEED_CFLAGS=\"$BUILD_CFLAGS\""
     echo "export HOGWEED_LIBS=\"$BUILD_LDFLAGS -lhogweed\""
     echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
-    export CFLAGS="-arch $arch"
-    export LDFLAGS="-arch $arch"
     export NETTLE_CFLAGS="$BUILD_CFLAGS"
     export NETTLE_LIBS="$BUILD_LDFLAGS -lnettle"
     export HOGWEED_CFLAGS="$BUILD_CFLAGS"
     export HOGWEED_LIBS="$BUILD_LDFLAGS -lhogweed"
     export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH
 
-    echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc"
-    arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc
+    if [ -n "$BUILD_MODE" ]; then
+      echo "arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc"
+      arch -$arch ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc
+    else
+      echo "./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc"
+      ./configure --prefix=$BUILD_PREFIX --libdir=$LIBDIR --with-nettle-mini --with-included-libtasn1 --with-included-unistring --without-p11-kit --without-zstd --without-brotli --disable-cxx --disable-static --disable-tools --disable-doc
+    fi
+
     echo
     echo "---- Exiting subshell ----"
     echo
@@ -499,12 +540,17 @@ cd $TREESIT
   echo
   echo "---- Entering subshell ----"
   echo
-  echo "export CFLAGS=\"${ARCH_FLAGS[*]} $TREESIT_CFLAGS\""
-  echo "export LDFLAGS=\"${ARCH_FLAGS[*]}\""
+  if [ -n "$BUILD_MODE" ]; then
+    echo "export CFLAGS=\"${ARCH_FLAGS[*]} $TREESIT_CFLAGS\""
+    echo "export LDFLAGS=\"${ARCH_FLAGS[*]}\""
+    export CFLAGS="${ARCH_FLAGS[*]} $TREESIT_CFLAGS"
+    export LDFLAGS="${ARCH_FLAGS[*]}"
+  else
+    echo "export CFLAGS=\"$TREESIT_CFLAGS\""
+    export CFLAGS="$TREESIT_CFLAGS"
+  fi
   echo "export PREFIX=$BUILD_PREFIX"
   echo "export LIBDIR=$LIBDIR"
-  export CFLAGS="${ARCH_FLAGS[*]} $TREESIT_CFLAGS"
-  export LDFLAGS="${ARCH_FLAGS[*]}"
   export PREFIX=$BUILD_PREFIX
   export LIBDIR=$LIBDIR
 
@@ -559,11 +605,18 @@ for spec in ${TSGRAMMARS[@]}; do
     echo
     echo "---- Entering subshell ----"
     echo
-    echo "export CFLAGS=\"${ARCH_FLAGS[*]} $BUILD_CFLAGS\""
-    echo "export LDFLAGS=\"${ARCH_FLAGS[*]} $BUILD_LDFLAGS\""
+    if [ -n "$BUILD_MODE" ]; then
+      echo "export CFLAGS=\"${ARCH_FLAGS[*]} $BUILD_CFLAGS\""
+      echo "export LDFLAGS=\"${ARCH_FLAGS[*]} $BUILD_LDFLAGS\""
+      export CFLAGS="${ARCH_FLAGS[*]} $BUILD_CFLAGS"
+      export LDFLAGS="${ARCH_FLAGS[*]} $BUILD_LDFLAGS"
+    else
+      echo "export CFLAGS=\"$BUILD_CFLAGS\""
+      echo "export LDFLAGS=\"$BUILD_LDFLAGS\""
+      export CFLAGS="$BUILD_CFLAGS"
+      export LDFLAGS="$BUILD_LDFLAGS"
+    fi
     echo "export LIBDIR=$GRAMMAR_LIBDIR"
-    export CFLAGS="${ARCH_FLAGS[*]} $BUILD_CFLAGS"
-    export LDFLAGS="${ARCH_FLAGS[*]} $BUILD_LDFLAGS"
     export LIBDIR=$GRAMMAR_LIBDIR
 
     # Adjust install_name to be relative to @rpath for bundled libraries
@@ -642,15 +695,22 @@ fi
   echo "---- Entering subshell ----"
   echo
   # Set LC_RPATH to @executable_path/lib via LDFLAGS for bundled libraries
-  echo "export CFLAGS=\"${ARCH_FLAGS[*]} $EMACS_CFLAGS\""
-  echo "export LDFLAGS=\"${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib\""
+  if [ -n "$BUILD_MODE" ]; then
+    echo "export CFLAGS=\"${ARCH_FLAGS[*]} $EMACS_CFLAGS\""
+    echo "export LDFLAGS=\"${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib\""
+    export CFLAGS="${ARCH_FLAGS[*]} $EMACS_CFLAGS"
+    export LDFLAGS="${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib"
+  else
+    echo "export CFLAGS=\"$EMACS_CFLAGS\""
+    echo "export LDFLAGS=\"-Wl,-rpath,@executable_path/lib\""
+    export CFLAGS="$EMACS_CFLAGS"
+    export LDFLAGS="-Wl,-rpath,@executable_path/lib"
+  fi
   echo "export LIBGNUTLS_CFLAGS=\"$BUILD_CFLAGS\""
   echo "export LIBGNUTLS_LIBS=\"$BUILD_LDFLAGS -lgnutls\""
   echo "export TREE_SITTER_CFLAGS=\"$BUILD_CFLAGS\""
   echo "export TREE_SITTER_LIBS=\"$BUILD_LDFLAGS -ltreesit\""
   echo "export PKG_CONFIG_PATH=$BUILD_PKG_CONFIG_PATH"
-  export CFLAGS="${ARCH_FLAGS[*]} $EMACS_CFLAGS"
-  export LDFLAGS="${ARCH_FLAGS[*]} -Wl,-rpath,@executable_path/lib"
   export LIBGNUTLS_CFLAGS="$BUILD_CFLAGS"
   export LIBGNUTLS_LIBS="$BUILD_LDFLAGS -lgnutls"
   export TREE_SITTER_CFLAGS="$BUILD_CFLAGS"

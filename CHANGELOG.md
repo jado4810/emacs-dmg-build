@@ -1,7 +1,8 @@
 # emacs-dmg-build - Changelog
 
-## 3x.x
+## 31.0
 
+* Remove "arch" options and commands for native build without Rosetta2
 * Now builtin libraries are built with install_name defined relative to @rpath
   and executables are built with LC_RPATH defined, so it can be run from any
   location where it is extracted
