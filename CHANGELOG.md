@@ -2,6 +2,7 @@
 
 ## 31.0
 
+* Change default configuration to build arm64 uni-arch binaries
 * Remove "arch" options and commands for native build without Rosetta2
 * Now builtin libraries are built with install_name defined relative to @rpath
   and executables are built with LC_RPATH defined, so it can be run from any
