@@ -55,7 +55,7 @@ TSGRAMMARS=(
 )
 
 # Target architectures
-ARCHES=(arm64 x86_64)
+ARCHES=(arm64)
 
 # Number of parallel processes on build
 CORES=4
