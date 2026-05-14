@@ -190,7 +190,8 @@ Execute the build script to create the dmg package under `build`.
 First, it gets required sources of grammar rules for treesit.
 It tries to update to the current version with "git pull" if already got; `-n` available to disable updating.
 
-It takes about 6 minutes in the environment of Apple M5, excluding getting or updating of sources of grammar rules.
+It takes about 3 minutes in the environment of Apple M5, excluding getting or updating of sources of grammar rules.
+For universal binaries, it takes about 6 minutes.
 
 ```console
 $ sh emacs-dmg-build.sh [-n]
