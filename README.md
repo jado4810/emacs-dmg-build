@@ -202,7 +202,7 @@ You can delete them if not necessary.
 LICENSE
 -------
 
-The script and the patches under [patches/custom](./patches/custom) and [patches/original](./patches/original) are provided under [CC0](./LICENSE.txt).
+The script and the patches under [patches/custom](./patches/custom) are provided under [CC0](./LICENSE.txt).
 
 External patches under [patches/plus](./patches/plus), [patches/inline](./patches/inline), and icon resources under [icons](./icons) are provided under other licenses: refer to the LICENSE or README files under each directories for detail.
 

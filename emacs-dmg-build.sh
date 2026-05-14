@@ -200,7 +200,7 @@ find_patches () {
   done
 }
 
-PATCHES=(`find_patches plus` `find_patches original`)
+PATCHES=(`find_patches plus`)
 [ "$USEINLINE" = "yes" ] && PATCHES+=(`find_patches inline`)
 [ "$USEHRICON" = "yes" ] && PATCHES+=(`find_patches custom icons`)
 [ "$USESPLASH" = "yes" ] && PATCHES+=(`find_patches custom splash`)
@@ -727,6 +727,9 @@ fi
 # Bundles libraries are to be shown under src/lib while dumping emacs
 echo "ln -s $PKGROOT$LIBDIR src/lib"
 ln -s $PKGROOT$LIBDIR src/lib
+
+echo "cp $PATCHDIR/custom/site-init.el lisp"
+cp $PATCHDIR/custom/site-init.el lisp
 
 echo "make -j$CORES"
 make -j$CORES
