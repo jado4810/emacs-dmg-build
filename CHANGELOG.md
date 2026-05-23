@@ -13,7 +13,8 @@
     * Updating ns-x-color - for Emacs-30.1 and later
     * Compatibility issue on tree-sitter - for Emacs-29.1 and later
 * Update middlewares below
-    * GnuTLS-3.8.12
+    * Nettle-4.0
+    * GnuTLS-3.8.13
 
 ## 30.2 (2025-08-15)
 
