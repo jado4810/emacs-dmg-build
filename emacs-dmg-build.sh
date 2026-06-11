@@ -44,11 +44,13 @@ TSGRAMMARS=(
   'json;https://github.com/tree-sitter/tree-sitter-json'
   'yaml;https://github.com/tree-sitter-grammars/tree-sitter-yaml'
   'dockerfile;https://github.com/camdencheek/tree-sitter-dockerfile'
+# maybe works with Emacs31.1 or later
 #  'c;http://github.com/tree-sitter/tree-sitter-c'
 #  'cpp;https://github.com/tree-sitter/tree-sitter-cpp'
 #  'javascript;https://github.com/tree-sitter/tree-sitter-javascript'
 #  'typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript'
 #  'tsx;https://github.com/tree-sitter/tree-sitter-typescript;tsx'
+#  'jsdoc;https://github.com/tree-sitter/tree-sitter-jsdoc'
 #  'go;https://github.com/tree-sitter/tree-sitter-go'
 #  'python;https://github.com/tree-sitter/tree-sitter-python'
 #  'ruby;https://github.com/tree-sitter/tree-sitter-ruby'
