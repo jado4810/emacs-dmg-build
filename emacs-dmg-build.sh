@@ -12,7 +12,7 @@ set -e -o pipefail
 # Emacs version
 #EMACSVER=29.4
 EMACSVER=30.2
-#EMACSVER=31.0.90
+#EMACSVER=31.0.91
 
 # nettle version
 NETTLEVER=4.0
