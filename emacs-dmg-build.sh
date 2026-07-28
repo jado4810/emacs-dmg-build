@@ -594,11 +594,11 @@ for spec in ${TSGRAMMARS[@]}; do
   date +"%Y/%m/%d %T - tree-sitter-grammar/$name" >> $LOGFILE
 
   if [ -n "$subdir" ]; then
-    echo "cd $GRAMMARSSRC/$name/$subdir"
-    cd $GRAMMARSSRC/$name/$subdir
+    echo "cd $GRAMMARS/$name/$subdir"
+    cd $GRAMMARS/$name/$subdir
   else
-    echo "cd $GRAMMARSSRC/$name"
-    cd $GRAMMARSSRC/$name
+    echo "cd $GRAMMARS/$name"
+    cd $GRAMMARS/$name
   fi
   echo "make clean"
   make clean
@@ -618,8 +618,6 @@ for spec in ${TSGRAMMARS[@]}; do
       export CFLAGS="$BUILD_CFLAGS"
       export LDFLAGS="$BUILD_LDFLAGS"
     fi
-    echo "export LIBDIR=$GRAMMAR_LIBDIR"
-    export LIBDIR=$GRAMMAR_LIBDIR
 
     # Adjust install_name to be relative to @rpath for bundled libraries
     echo "make -j$CORES LIBDIR=@rpath SOEXTVER=dylib"
