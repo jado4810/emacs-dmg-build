@@ -21,7 +21,7 @@ NETTLEVER=4.0
 GNUTLSVER=3.8.13
 
 # tree-sitter version
-TREESITVER=0.26.9
+TREESITVER=0.26.11
 
 # site-lisp path
 SITELISP="/Library/Application Support/Emacs/site-lisp"
