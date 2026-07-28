@@ -41,19 +41,30 @@ USESPLASH=no
 # Target language grammars
 TSGRAMMARS=(
   'bash;https://github.com/tree-sitter/tree-sitter-bash'
+  'dockerfile;https://github.com/camdencheek/tree-sitter-dockerfile'
   'json;https://github.com/tree-sitter/tree-sitter-json'
   'yaml;https://github.com/tree-sitter-grammars/tree-sitter-yaml'
-  'dockerfile;https://github.com/camdencheek/tree-sitter-dockerfile'
 # maybe works with Emacs31.1 or later
-#  'c;http://github.com/tree-sitter/tree-sitter-c'
+#  'c;https://github.com/tree-sitter/tree-sitter-c'
+#  'c-sharp;https://github.com/tree-sitter/tree-sitter-c-sharp'
 #  'cpp;https://github.com/tree-sitter/tree-sitter-cpp'
-#  'javascript;https://github.com/tree-sitter/tree-sitter-javascript'
-#  'typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript'
-#  'tsx;typescript;tsx'
-#  'jsdoc;https://github.com/tree-sitter/tree-sitter-jsdoc'
 #  'go;https://github.com/tree-sitter/tree-sitter-go'
+#  'haskell;https://github.com/tree-sitter/tree-sitter-haskell'
+#  'java;https://github.com/tree-sitter/tree-sitter-java'
+#  'javascript;https://github.com/tree-sitter/tree-sitter-javascript'
+#  'jsdoc;https://github.com/tree-sitter/tree-sitter-jsdoc'
+#  'ocaml;https://github.com/tree-sitter/tree-sitter-ocaml;grammars/ocaml'
+#  'ocaml-interface;ocaml;grammars/interface'
+#  'ocaml-type;ocaml;grammars/type'
+#  'php;https://github.com/tree-sitter/tree-sitter-php;php'
+#  'php_only;php;php_only'
 #  'python;https://github.com/tree-sitter/tree-sitter-python'
+#  'regex;https://github.com/tree-sitter/tree-sitter-regex'
 #  'ruby;https://github.com/tree-sitter/tree-sitter-ruby'
+#  'rust;https://github.com/tree-sitter/tree-sitter-rust'
+#  'scala;https://github.com/tree-sitter/tree-sitter-scala'
+#  'tsx;typescript;tsx'
+#  'typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript'
 )
 
 # Target architectures
