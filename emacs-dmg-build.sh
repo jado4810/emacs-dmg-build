@@ -49,7 +49,7 @@ TSGRAMMARS=(
 #  'cpp;https://github.com/tree-sitter/tree-sitter-cpp'
 #  'javascript;https://github.com/tree-sitter/tree-sitter-javascript'
 #  'typescript;https://github.com/tree-sitter/tree-sitter-typescript;typescript'
-#  'tsx;https://github.com/tree-sitter/tree-sitter-typescript;tsx'
+#  'tsx;typescript;tsx'
 #  'jsdoc;https://github.com/tree-sitter/tree-sitter-jsdoc'
 #  'go;https://github.com/tree-sitter/tree-sitter-go'
 #  'python;https://github.com/tree-sitter/tree-sitter-python'
@@ -307,12 +307,18 @@ if [ "$1" = "-n" -o "$1" = "--no-pull" ]; then
 
   notfound=0
   for spec in ${TSGRAMMARS[@]}; do
+    repo=${spec#*;}
+    repo=${repo%%;*}
     name=${spec%%;*}
 
-    if [ ! -d $GRAMMARSSRC/$name ]; then
-      echo >&2 "tree-sitter grammar source for $name not found."
-      notfound=1
-    fi
+    case $repo in
+    http*)
+      if [ ! -d $GRAMMARSSRC/$name ]; then
+        echo >&2 "tree-sitter grammar source for $name not found."
+        notfound=1
+      fi
+      ;;
+    esac
   done
 
   if [ $notfound -ne 0 ]; then
@@ -333,21 +339,25 @@ else
     repo=${repo%%;*}
     name=${spec%%;*}
 
-    if [ -d $GRAMMARSSRC/$name ]; then
-      echo "cd $GRAMMARSSRC/$name"
-      cd $GRAMMARSSRC/$name
-      echo "git pull"
-      git pull
-    else
-      if [ ! -d $GRAMMARSSRC ]; then
-        echo "mkdir $GRAMMARSSRC"
-        mkdir $GRAMMARSSRC
+    case $repo in
+    http*)
+      if [ -d $GRAMMARSSRC/$name ]; then
+        echo "cd $GRAMMARSSRC/$name"
+        cd $GRAMMARSSRC/$name
+        echo "git pull"
+        git pull
+      else
+        if [ ! -d $GRAMMARSSRC ]; then
+          echo "mkdir $GRAMMARSSRC"
+          mkdir $GRAMMARSSRC
+        fi
+        echo "cd $GRAMMARSSRC"
+        cd $GRAMMARSSRC
+        echo "git clone $repo $name"
+        git clone $repo $name
       fi
-      echo "cd $GRAMMARSSRC"
-      cd $GRAMMARSSRC
-      echo "git clone $repo $name"
-      git clone $repo $name
-    fi
+      ;;
+    esac
   done
 
 fi
@@ -582,23 +592,33 @@ for spec in ${TSGRAMMARS[@]}; do
   case $repo in
   *\;*)
     subdir=${repo#*;}
+    repo=${repo%%;*}
     ;;
   *)
     subdir=
     ;;
   esac
 
+  case $repo in
+  http*)
+    dir=$name
+    ;;
+  *)
+    dir=$repo
+    ;;
+  esac
+
   echo
   echo "================ $name ================"
   echo
-  date +"%Y/%m/%d %T - tree-sitter-grammar/$name" >> $LOGFILE
+  date +"%Y/%m/%d %T - tree-sitter-grammar/$dir" >> $LOGFILE
 
   if [ -n "$subdir" ]; then
-    echo "cd $GRAMMARS/$name/$subdir"
-    cd $GRAMMARS/$name/$subdir
+    echo "cd $GRAMMARS/$dir/$subdir"
+    cd $GRAMMARS/$dir/$subdir
   else
-    echo "cd $GRAMMARS/$name"
-    cd $GRAMMARS/$name
+    echo "cd $GRAMMARS/$dir"
+    cd $GRAMMARS/$dir
   fi
   echo "make clean"
   make clean
