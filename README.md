@@ -105,14 +105,15 @@ It seems that only PNG images are actually used in the macOS environment, but XP
 
 #### g. Language rules to be included
 
-Set `TSGRAMMARS` to language and source information to be included.
+Set `TSGRAMMARS` to specify the list of languages and sources to be included in grammars for treesit.
 
 By default, we specify those that has been confirmed to work with Emacs30, so select them as appropriate.
 
 The format of each line is like below; to build at the subdirectory, specify the third element.
+Specify another language name, corresponding to the source to share, instead of url to build multiple grammars from a single source by specifying different subdirectories.
 
 ``` bash
-'language;url-of-git-repository-to-get-source[;subdirectory]'
+'language;url-of-git-repository-to-get-source--or-another-language[;subdirectory]'
 ```
 
 #### h. Target architectures
