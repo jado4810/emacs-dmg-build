@@ -1,5 +1,5 @@
 emacs-dmg-build: DMG Package Builder of Gnu Emacs
-===========================
+=================================================
 
 [![Emacs 30 Ready](https://img.shields.io/badge/Emacs30-Ready-green?style=flag&logo=gnuemacs&logoColor=white&labelColor=7F5AB6)](https://github.com/jado4810/emacs-dmg-build/releases/tag/30.2)
 [![Emacs 29 Ready](https://img.shields.io/badge/Emacs29-Ready-green?style=flag&logo=gnuemacs&logoColor=white&labelColor=7F5AB6)](https://github.com/jado4810/emacs-dmg-build/releases/tag/29.4)
@@ -201,7 +201,7 @@ $ sh emacs-dmg-build.sh [-n]
 The source packages are expanded under `build`.
 You can delete them if not necessary.
 
-LICENSE
+License
 -------
 
 The script and the patches under [patches/custom](./patches/custom) are provided under [CC0](./LICENSE.txt).
