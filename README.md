@@ -4,8 +4,6 @@ emacs-dmg-build: DMG Package Builder of Gnu Emacs
 [![Emacs 30 Ready](https://img.shields.io/badge/Emacs30-Ready-green?style=flag&logo=gnuemacs&logoColor=white&labelColor=7F5AB6)](https://github.com/jado4810/emacs-dmg-build/releases/tag/30.2)
 [![Emacs 29 Ready](https://img.shields.io/badge/Emacs29-Ready-green?style=flag&logo=gnuemacs&logoColor=white&labelColor=7F5AB6)](https://github.com/jado4810/emacs-dmg-build/releases/tag/29.4)
 [![macOS26 Ready](https://img.shields.io/badge/macOS26-Ready-green?style=flat&logo=apple&logoColor=white&labelColor=black)](https://www.apple.com/macos/)
-[![Intel Universal Binary](https://img.shields.io/badge/Universal_Binary-0071C5?style=flat&logo=intel&logoColor=white&logoSize=auto)](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary)
-[![arm Universal Binary](https://img.shields.io/badge/Universal_Binary-0091BD?style=flat&logo=arm&logoColor=white&logoSize=auto)](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary)
 
 EN|[JA](./README-ja.md)
 

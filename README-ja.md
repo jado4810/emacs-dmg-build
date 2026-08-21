@@ -4,8 +4,6 @@ emacs-dmg-build: Gnu Emacs DMGパッケージビルダー
 [![Emacs 30 Ready](https://img.shields.io/badge/Emacs30-Ready-green?style=flag&logo=gnuemacs&logoColor=white&labelColor=7F5AB6)](https://github.com/jado4810/emacs-dmg-build/releases/tag/30.2)
 [![Emacs 29 Ready](https://img.shields.io/badge/Emacs29-Ready-green?style=flag&logo=gnuemacs&logoColor=white&labelColor=7F5AB6)](https://github.com/jado4810/emacs-dmg-build/releases/tag/29.4)
 [![macOS26 Ready](https://img.shields.io/badge/macOS26-Ready-green?style=flat&logo=apple&logoColor=white&labelColor=black)](https://www.apple.com/macos/)
-[![Intel Universal Binary](https://img.shields.io/badge/Universal_Binary-0071C5?style=flat&logo=intel&logoColor=white&logoSize=auto)](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary)
-[![arm Universal Binary](https://img.shields.io/badge/Universal_Binary-0091BD?style=flat&logo=arm&logoColor=white&logoSize=auto)](https://developer.apple.com/documentation/apple-silicon/building-a-universal-macos-binary)
 
 [EN](./README.md)|JA
 
@@ -34,23 +32,23 @@ Emacs29以降で標準となったtreesitに対応しており、いくつかの
 
 #### a. Gnu Emacs本体のソース
 
-Gnuミラー([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/))、
-もしくはメインサーバー([https://ftp.gnu.org/gnu/emacs/](https://ftp.gnu.org/gnu/emacs/))からダウンロードできます。
+Gnuミラー([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/))からダウンロードできます。
+メインサーバー([https://ftp.gnu.org/gnu/emacs/](https://ftp.gnu.org/gnu/emacs/))も利用できます。
 
 #### b. nettleのソース
 
 GnuTLSに必須となる、暗号アルゴリズムの実装です。
 
-Gnuミラー([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/))、
-もしくはメインサーバー([https://ftp.gnu.org/gnu/nettle/](https://ftp.gnu.org/gnu/nettle/))からダウンロードできます。
+Gnuミラー([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/))からダウンロードできます。
+メインサーバー([https://ftp.gnu.org/gnu/nettle/](https://ftp.gnu.org/gnu/nettle/))も利用できます。
 
 #### c. GnuTLSのソース
 
 SSL/TLSの実装です。
 EmacsはmacOS標準のOpenSSLではなく、GnuTLSが必要です。
 
-公式サイト([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html))、
-もしくはGitLabプロジェクトのタグページ([https://gitlab.com/gnutls/gnutls/-/tags](https://gitlab.com/gnutls/gnutls/-/tags))からダウンロードできます。
+公式サイト([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html))からダウンロードできます。
+GitLabプロジェクトのタグページ([https://gitlab.com/gnutls/gnutls/-/tags](https://gitlab.com/gnutls/gnutls/-/tags))も利用できます。
 
 > [!NOTE]
 >
