@@ -32,20 +32,23 @@ It will recognize both `.tar.gz` and `.tar.xz` formats automatically.
 
 #### a. Source of Gnu Emacs
 
-Available on Gnu mirror ([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/)).
+Available on Gnu mirror ([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/)),
+or primary ([https://ftp.gnu.org/gnu/emacs/](https://ftp.gnu.org/gnu/emacs/)).
 
 #### b. Source of nettle
 
 Implementation of cryptographic algorithm, required for GnuTLS.
 
-Available on Gnu mirror ([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/)).
+Available on Gnu mirror ([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/)),
+or primary ([https://ftp.gnu.org/gnu/nettle/](https://ftp.gnu.org/gnu/nettle/)).
 
 #### c. Source of GnuTLS
 
 Implementation of SSL/TLS.
 Emacs requires GnuTLS, not OpenSSL coming with macOS.
 
-Available on official site ([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html)).
+Available on official site ([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html)),
+or GitLab tags page ([https://gitlab.com/gnutls/gnutls/-/tags](https://gitlab.com/gnutls/gnutls/-/tags)).
 
 > [!NOTE]
 >

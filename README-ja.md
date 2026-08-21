@@ -34,20 +34,23 @@ Emacs29以降で標準となったtreesitに対応しており、いくつかの
 
 #### a. Gnu Emacs本体のソース
 
-Gnuミラー([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/))からダウンロードできます。
+Gnuミラー([https://ftpmirror.gnu.org/emacs/](https://ftpmirror.gnu.org/emacs/))、
+もしくはメインサーバー([https://ftp.gnu.org/gnu/emacs/](https://ftp.gnu.org/gnu/emacs/))からダウンロードできます。
 
 #### b. nettleのソース
 
 GnuTLSに必須となる、暗号アルゴリズムの実装です。
 
-Gnuミラー([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/))からダウンロードできます。
+Gnuミラー([https://ftpmirror.gnu.org/nettle/](https://ftpmirror.gnu.org/nettle/))、
+もしくはメインサーバー([https://ftp.gnu.org/gnu/nettle/](https://ftp.gnu.org/gnu/nettle/))からダウンロードできます。
 
 #### c. GnuTLSのソース
 
 SSL/TLSの実装です。
 EmacsはmacOS標準のOpenSSLではなく、GnuTLSが必要です。
 
-公式サイト([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html))からダウンロードできます。
+公式サイト([https://www.gnutls.org/download.html](https://www.gnutls.org/download.html))、
+もしくはGitLabプロジェクトのタグページ([https://gitlab.com/gnutls/gnutls/-/tags](https://gitlab.com/gnutls/gnutls/-/tags))からダウンロードできます。
 
 > [!NOTE]
 >
