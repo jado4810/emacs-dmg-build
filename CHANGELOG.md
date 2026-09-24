@@ -1,6 +1,6 @@
 # emacs-dmg-build - Changelog
 
-## 31.0
+## 31.0 (2026-08-25)
 
 * Change default configuration to build arm64 uni-arch binaries
 * Remove "arch" options and commands for native build without Rosetta2
