@@ -405,6 +405,25 @@ fi
 echo "cp -rp $GRAMMARSSRC $GRAMMARS"
 cp -rp $GRAMMARSSRC $GRAMMARS
 
+# Build envs -----------------
+
+PRODVER=$(sw_vers --productVersion)
+PRODMAJVER=${PRODVER%%.*}
+
+XCDDEV=/Applications/Xcode.app/Contents/Developer
+CLIDEV=/Library/Developer/CommandLineTools
+if [ -d $XCDDEV ]; then
+  SDK=$XCDDEV/Platforms/MacOSX.platform/Developer/SDKs
+elif [ -d $CLIDEV ]; then
+  SDK=$CLIDEV/SDKs
+else
+  echo >&2 "Xcode command line tools not found."
+  exit 1
+fi
+
+echo "export SDKROOT=$SDK/MacOSX$PRODMAJVER.sdk"
+export SDKROOT=$SDK/MacOSX$PRODMAJVER.sdk
+
 # Build required libraries to include into the package -----------------
 
 echo
