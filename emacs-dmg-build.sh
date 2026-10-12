@@ -424,6 +424,15 @@ fi
 echo "export SDKROOT=$SDK/MacOSX$PRODMAJVER.sdk"
 export SDKROOT=$SDK/MacOSX$PRODMAJVER.sdk
 
+if [ ! -d $EMACS/.git ]; then
+  # xxx Fake git with dummy repository to avoid extracting revision/branch
+  #     (used for emacs-repository-version/branch) as those of this script
+  echo "cd $EMACS"
+  cd $EMACS
+  echo "git init"
+  git init
+fi
+
 # Build required libraries to include into the package -----------------
 
 echo
