@@ -1,7 +1,8 @@
 # emacs-dmg-build - Changelog
 
-## 31.0 (2026-08-25)
+## 31.1 (2026-08-25)
 
+* For Emacs-31.1
 * Change default configuration to build arm64 uni-arch binaries
 * Remove "arch" options and commands for native build without Rosetta2
 * Now builtin libraries are built with install_name defined relative to @rpath
