@@ -1,3 +1,5 @@
+;;; -*-lexical-binding:t-*-
+
 (add-hook 'before-init-hook
   (lambda ()
     (setq treesit-extra-load-path
