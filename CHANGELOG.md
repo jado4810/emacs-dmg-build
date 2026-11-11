@@ -1,5 +1,16 @@
 # emacs-dmg-build - Changelog
 
+## 31.2
+
+* For Emacs-31.2
+* Some tweaks on build environment
+    * Avoid error about Xcode SDK version mismatch especially with older macOS
+    * Fix some values of constants derived from build environment, such as,
+      emacs-repository-version, emacs-repository-branch and source-directory
+    * Suppress warning on site-init.el while building
+* Update middlewares below
+    * tree-sitter-0.27.2
+
 ## 31.1 (2026-08-25)
 
 * For Emacs-31.1
